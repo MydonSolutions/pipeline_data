@@ -6,8 +6,8 @@
     Channelize,
     Detect
   } from "./models/modules";
-  import { COMP_FLOAT16, COMP_FLOAT32, COMP_INT8 } from "./models/datatypes";
-  import { DataDimension } from "./models/datadimensions";
+  import { COMP_FLOAT16, COMP_FLOAT32, COMP_INT8, DataType_fromObject } from "./models/datatypes";
+  import { DataDimension, DataDimension_fromObject } from "./models/datadimensions";
   import Pipeline from "./lib/Pipeline.svelte";
 
   let pipeline = [
@@ -17,18 +17,28 @@
     new Cast(COMP_FLOAT16),
   ]
 
-  let datadim = new DataDimension(
-    20,
-    768,
-    8192,
-    2,
-    COMP_INT8
-  )
-
+  let textarea_datadim_json:string = JSON.stringify(
+    new DataDimension(
+      20,
+      768,
+      8192,
+      2,
+      COMP_INT8
+    )
+  );
+  
+  $: datadim = DataDimension_fromObject(JSON.parse(textarea_datadim_json));
 </script>
 
 <main>
   <h1>Pipeline Dataflow View</h1>
+  <div style="width:100%;height:250px">
+    DataDim: <br/>
+    <textarea
+      style="width:50%;height:50%"
+      bind:value={textarea_datadim_json}
+    />
+  </div>
   <Pipeline {pipeline} {datadim}/>
 </main>
 
