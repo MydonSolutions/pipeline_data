@@ -9,6 +9,7 @@
   import { COMP_FLOAT16, COMP_FLOAT32, COMP_INT8, DataType_fromObject } from "./models/datatypes";
   import { DataDimension, DataDimension_fromObject } from "./models/datadimensions";
   import Pipeline from "./lib/Pipeline.svelte";
+import InputJson from "./lib/InputJSON.svelte";
 
   let pipeline = [
     new Cast(COMP_FLOAT32),
@@ -35,12 +36,8 @@
 <main>
   <h1>Pipeline Dataflow View</h1>
   <div class="inputs">
-    <div>
-      Input DataDimension:
-      <textarea bind:value={textarea_datadim_json}/>
-    </div>
+    <InputJson title="Input DataDimension" bind:value={textarea_datadim_json}/>
   </div>
-  <br>
   <Pipeline {pipeline} {datadim}/>
 </main>
 
@@ -72,13 +69,6 @@
     height:250px;
     display:flex;
     justify-content: space-around;
-  }
-
-  textarea {
-    width:100%;
-    height:100%;
-    align-self: center;
-    resize: none;
   }
 
   @media (min-width: 480px) {
