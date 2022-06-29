@@ -32,12 +32,9 @@
 
 <main>
   <h1>Pipeline Dataflow View</h1>
-  <div style="width:100%;height:250px">
-    DataDim: <br/>
-    <textarea
-      style="width:50%;height:50%"
-      bind:value={textarea_datadim_json}
-    />
+  <div class="inputs">
+    DataDim:
+    <textarea bind:value={textarea_datadim_json}/>
   </div>
   <Pipeline {pipeline} {datadim}/>
 </main>
@@ -63,6 +60,20 @@
     line-height: 1.1;
     margin: 2rem auto;
     max-width: 14rem;
+  }
+
+  div.inputs {
+    width:100%;
+    height:250px;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  textarea {
+    width:70%;
+    height:100%;
+    align-self: center;
   }
 
   @media (min-width: 480px) {
