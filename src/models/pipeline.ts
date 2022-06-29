@@ -34,7 +34,7 @@ class Pipeline {
    */
   private transfer(to:Device, dataflow:Dataflow):Dataflow {
     return new Dataflow(
-      to,
+      Device.PCI,
       dataflow.datadimension.copy(),
       `Transfer(${dataflow.device}->${to})`,
       dataflow.rate
@@ -63,8 +63,9 @@ class Pipeline {
           dataflow = this.transfer(module.device, dataflow);
           dataflows = [
             ...dataflows,
-            dataflow
+            dataflow.copy()
           ];
+          dataflow.device = module.device;
         }
   
         dataflow = module.ingest(dataflow);

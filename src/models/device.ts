@@ -5,4 +5,5 @@ export {
 enum Device {
   CPU ="CPU",
   GPU ="GPU",
+  PCI ="PCI",
 }

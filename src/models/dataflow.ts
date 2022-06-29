@@ -31,6 +31,7 @@ class Dataflow {
   datadimension: DataDimension
   rate: number
   label: string
+
   constructor(
     device: Device,
     datadimension: DataDimension,
@@ -41,5 +42,17 @@ class Dataflow {
     this.datadimension = datadimension;
     this.label = label;
     this.rate = rate;
+  }
+
+  /**
+   * copy
+   */
+  public copy() {
+    return new Dataflow(
+      this.device,
+      this.datadimension.copy(),
+      this.label,
+      this.rate,
+    );
   }
 }

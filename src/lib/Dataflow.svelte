@@ -12,6 +12,7 @@
       "devices": {
         "CPU": 0.0,
         "GPU": 0.0,
+        "PCI": 0.0,
       }
     }
     dataflows.forEach(flow => {
@@ -85,6 +86,7 @@
     </div>
   {/if}
   <div class="dataflow_stats">
+    PCI: {byte_string(dataflow_bytestats.devices.PCI)}
     CPU: {byte_string(dataflow_bytestats.devices.CPU)}
     GPU: {byte_string(dataflow_bytestats.devices.GPU)}
   </div>
