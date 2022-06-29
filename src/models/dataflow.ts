@@ -30,8 +30,8 @@ class Dataflow {
   device: Device
   datadim_in: DataDimension
   datadim_out: DataDimension
-  rate: number
   label: string
+  rate: number
 
   constructor(
     device: Device,

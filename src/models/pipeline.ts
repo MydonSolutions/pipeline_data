@@ -34,7 +34,7 @@ class Pipeline {
    */
   private transfer(to:Device, dataflow:Dataflow):Dataflow {
     return new Dataflow(
-      Device.PCI,
+      to == Device.GPU ? Device.PCI_H2D : Device.PCI_D2H,
       dataflow.datadim_out.copy(),
       dataflow.datadim_out.copy(),
       `Transfer(${dataflow.device}->${to})`,

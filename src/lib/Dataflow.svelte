@@ -2,6 +2,7 @@
   import type { Dataflow } from "../models/dataflow";
   import type { Pipeline } from "../models/pipeline";
   import type { DataDimension } from "../models/datadimensions";
+  import { Device } from "../models/device";
 
   export let pipeline:Pipeline = undefined;
   export let datadim:DataDimension = undefined;
@@ -12,11 +13,15 @@
       "devices": {
         "CPU": 0.0,
         "GPU": 0.0,
-        "PCI": 0.0,
+        "PCI_H2D": 0.0,
+        "PCI_D2H": 0.0,
       }
     }
     dataflows.forEach(flow => {
-      bytestats['devices'][flow.device] += flow.datadim_in.bytesize();
+      bytestats['devices'][flow.device] += flow.datadim_out.bytesize();
+      if (flow.device == Device.CPU || flow.device == Device.GPU) {
+        bytestats['devices'][flow.device] += flow.datadim_in.bytesize();
+      }
     });
     return bytestats;
   }
@@ -67,7 +72,7 @@
         {flow.label}
       </div>
       <div style="grid-column: 3;">
-        {byte_string(flow.datadim_out.bytesize())}
+        {byte_string(flow.datadim_out.bytesize())} ({flow.device})
       </div>
       <div style="grid-column: 4;">
         ({flow.datadim_out.aspects},
@@ -88,9 +93,10 @@
     </div>
   {/if}
   <div class="dataflow_stats">
-    PCI: {byte_string(dataflow_bytestats.devices.PCI)}
-    CPU: {byte_string(dataflow_bytestats.devices.CPU)}
-    GPU: {byte_string(dataflow_bytestats.devices.GPU)}
+    PCI_H2D: {byte_string(dataflow_bytestats.devices.PCI_H2D)}<br/>
+    PCI_D2H: {byte_string(dataflow_bytestats.devices.PCI_D2H)}<br/>
+    CPU: {byte_string(dataflow_bytestats.devices.CPU)}<br/>
+    GPU: {byte_string(dataflow_bytestats.devices.GPU)}<br/>
   </div>
 </div>
 
