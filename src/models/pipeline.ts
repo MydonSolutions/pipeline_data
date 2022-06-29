@@ -105,6 +105,7 @@ function Pipeline_fromObject(jso:Object):Pipeline {
     'modules',
     'label',
     'device',
+    'ingestrate',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
       throw new Error(`DataType from JSObject: Missing '${prop}' property (${jso}).`);
@@ -140,5 +141,5 @@ function Pipeline_fromObject(jso:Object):Pipeline {
         break;
     }
   });
-  return new Pipeline(modules, jso['label'], jso['device']);
+  return new Pipeline(modules, jso['label'], jso['device'], jso['ingestrate']);
 }
