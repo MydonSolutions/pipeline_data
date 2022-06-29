@@ -11,7 +11,7 @@ export {
   Cast, Cast_fromObject,
   Channelize, Channelize_fromObject,
   Detect, Detect_fromObject,
-  TimeGather, TimeGather_fromObject,
+  GatherTime, GatherTime_fromObject,
 }
 
 interface IModule {
@@ -326,7 +326,7 @@ function Detect_fromObject(jso:Object) {
   );
 }
 
-class TimeGather implements IModule{
+class GatherTime implements IModule{
   device: Device;
   length: number;
 
@@ -342,7 +342,7 @@ class TimeGather implements IModule{
    * toString
    */
   public toString() {
-    return  `TimeGather(${this.length})`;
+    return  `GatherTime(${this.length})`;
   }
 
   /**
@@ -350,7 +350,7 @@ class TimeGather implements IModule{
    */
   public toJSON() {
     return {
-      "module": "TimeGather",
+      "module": "GatherTime",
       "device": this.device,
       "length": this.length,
     }
@@ -372,16 +372,16 @@ class TimeGather implements IModule{
     return flow;
   }
 }
-function TimeGather_fromObject(jso:Object) {
+function GatherTime_fromObject(jso:Object) {
   [
     'device',
     'length',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`TimeGather from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`GatherTime from JSObject: Missing '${prop}' property (${jso}).`);
     }
   });
-  return new TimeGather(
+  return new GatherTime(
     jso['device'],
     jso['length']
   );

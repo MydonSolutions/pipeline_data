@@ -3,7 +3,7 @@
     Beamform,
     Cast,
     Channelize,
-    TimeGather,
+    GatherTime,
   } from "../models/modules";
   import { COMP_FLOAT16, COMP_FLOAT32 } from "../models/datatypes";
   import { Pipeline, Pipeline_fromObject } from "../models/pipeline";
@@ -12,7 +12,7 @@
 
   export let pipeline:Pipeline = new Pipeline(
     [
-      new TimeGather(Device.CPU, 262144),
+      new GatherTime(Device.CPU, 262144),
       new Cast(Device.GPU, COMP_FLOAT32),
       new Channelize(Device.GPU, 262144),
       new Beamform(Device.GPU, 8),

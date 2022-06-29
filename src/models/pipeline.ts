@@ -1,6 +1,6 @@
-import { DataDimension } from "./datadimensions";
+import type { DataDimension } from "./datadimensions";
 import { Dataflow, getDataflowDirection } from "./dataflow";
-import { Device } from "./device";
+import type { Device } from "./device";
 import {
   IModule,
   Accumulate_fromObject,
@@ -8,7 +8,7 @@ import {
   Cast_fromObject,
   Channelize_fromObject,
   Detect_fromObject,
-  TimeGather_fromObject,
+  GatherTime_fromObject,
 } from "./modules";
 
 export {
@@ -125,8 +125,8 @@ function Pipeline_fromObject(jso:Object):Pipeline {
       case 'Detect':
         modules = [...modules, Detect_fromObject(module)];
         break;
-      case 'TimeGather':
-        modules = [...modules, TimeGather_fromObject(module)];
+      case 'GatherTime':
+        modules = [...modules, GatherTime_fromObject(module)];
         break;
       default:
         throw new Error("Unrecognised Module!");
