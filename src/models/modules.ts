@@ -114,7 +114,9 @@ class Channelize implements IModule{
   */
   public ingest(datadim:DataDimension):DataDimension {
     if (datadim.timesamples % this.rate != 0) {
-      throw new Error("Rate not a factor of timesamples.");
+      throw new Error(
+        `Channelizer rate (${this.rate}) not a factor of timesamples (${datadim.timesamples}).`
+      );
     }
     
     let outdim = datadim.copy();
