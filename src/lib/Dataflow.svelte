@@ -13,16 +13,21 @@
       "buses":{
         "PCI": 0.0,
       },
-      "devices": {
+      "relative_throughput":{
+        "CPU": 0.0,
+        "GPU": 0.0,
+      },
+      "timeinvariant": {
         "CPU": 0.0,
         "GPU": 0.0,
       }
     }
     dataflows.forEach(flow => {
       if(flow.datadim_out != undefined){
-        bytestats['devices'][flow.direction.to] += flow.datadim_out.bytesize();
+        bytestats['timeinvariant'][flow.direction.to] += flow.datadim_out.bytesize();
+        bytestats['relative_throughput'][flow.direction.to] += flow.datadim_out.bytesize()*flow.rate;
         if(flow.direction.to != flow.direction.from){
-          bytestats['buses']['PCI'] += flow.datadim_out.bytesize();
+          bytestats['buses']['PCI'] += flow.datadim_out.bytesize()*flow.rate;
         }
       }
     });
@@ -57,9 +62,22 @@
     </div>
   {/if}
   <div class="dataflow_stats">
-    CPU: {byte_string(dataflow_bytestats.devices.CPU)}<br/>
-    GPU: {byte_string(dataflow_bytestats.devices.GPU)}<br/>
-    PCI: {byte_string(dataflow_bytestats.buses.PCI)}<br/>
+    <div style="grid-column: 1;">
+      Time Invariant
+    </div>
+    <div style="grid-column: 2;">
+      Throughput
+    </div>
+
+    <div style="grid-column: 1;">
+      CPU: {byte_string(dataflow_bytestats.timeinvariant.CPU)}<br/>
+      GPU: {byte_string(dataflow_bytestats.timeinvariant.GPU)}<br/>
+    </div>
+    <div style="grid-column: 2;">
+      CPU: {byte_string(dataflow_bytestats.relative_throughput.CPU)}<br/>
+      GPU: {byte_string(dataflow_bytestats.relative_throughput.GPU)}<br/>
+      PCI: {byte_string(dataflow_bytestats.buses.PCI)}<br/>
+    </div>
   </div>
 </div>
 
@@ -68,5 +86,9 @@
     color: red;
     margin-bottom: 10px;
   }
-
+  div.dataflow_stats {
+    display: grid;
+    row-gap: 5px;
+    margin-bottom: 10px;
+  }
 </style>
