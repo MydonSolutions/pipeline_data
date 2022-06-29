@@ -21,21 +21,11 @@ class Pipeline {
 
   constructor(
     modules: IModule[],
-    label: string
+    label: string,
   ) {
     this.modules = modules;
     this.label = label;
     this.error = undefined;
-  }
-
-  /**
-   * copy
-   */
-  public copy() {
-    return new Pipeline(
-      this.modules,
-      this.label,
-    );
   }
 
   /**
@@ -47,7 +37,9 @@ class Pipeline {
     this.error = undefined;
 
     let lastDevice = Device.CPU;
-    let dataflow:Dataflow[] = [new Dataflow(DataflowDirection.CPU2CPU, datadim)];
+    let dataflow:Dataflow[] = [
+      new Dataflow(DataflowDirection.CPU2CPU, datadim, "Input")
+    ];
     this.modules.forEach(module => {
       try {
         datadim = module.ingest(datadim);
@@ -56,12 +48,13 @@ class Pipeline {
         this.error = error;
         return []
       }
-      
+
       dataflow = [
         ...dataflow,
         new Dataflow(
           getDataflowDirection(lastDevice, module.device),
           datadim,
+          module.toString()
         )
       ];
       lastDevice = module.device;

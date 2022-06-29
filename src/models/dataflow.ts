@@ -36,11 +36,14 @@ function getDataflowDirection(from:Device, to:Device) {
 class Dataflow {
   direction: DataflowDirection
   datadimension: DataDimension
+  label: string
   constructor(
     direction: DataflowDirection,
     datadimension: DataDimension,
+    label: string,
   ) {
     this.direction = direction
     this.datadimension = datadimension
+    this.label = label
   }
 }

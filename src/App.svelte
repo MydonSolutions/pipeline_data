@@ -1,13 +1,12 @@
 <script lang="ts">
   import type { DataDimension } from "./models/datadimensions";
   import type { Pipeline as Pipeline_t } from "./models/pipeline";
-  import Pipeline from "./lib/Pipeline.svelte";
+  import Dataflow from "./lib/Dataflow.svelte";
   import InputPipeline from "./lib/InputPipeline.svelte";
   import InputDataDimension from "./lib/InputDataDimension.svelte";
 
   let pipeline: Pipeline_t;
-  let datadim:DataDimension;
-
+  let datadim: DataDimension;
 </script>
 
 <main>
@@ -16,7 +15,7 @@
     <InputPipeline bind:pipeline/>
     <InputDataDimension bind:datadim/>
   </div>
-  <Pipeline {pipeline} {datadim}/>
+  <Dataflow {pipeline} {datadim}/>
 </main>
 
 <style>
