@@ -1,5 +1,8 @@
 import type { DataType } from "./datatypes";
 import type { DataDimension } from "./datadimensions";
+export type {
+  IModule,
+}
 export {
   Accumulate,
   Beamform,
