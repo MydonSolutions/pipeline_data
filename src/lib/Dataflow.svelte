@@ -1,10 +1,39 @@
 <script lang="ts">
-  import type { Pipeline } from "src/models/pipeline";
+  import { Dataflow, DataflowDirection } from "../models/dataflow";
+  import type { Pipeline } from "../models/pipeline";
   import type { DataDimension } from "../models/datadimensions";
 
   export let pipeline:Pipeline = undefined;
   export let datadim:DataDimension = undefined;
   $: dataflow = pipeline == undefined ? [] : pipeline.ingest(datadim);
+
+  function dataflowsBytestats(dataflows:Dataflow[]) {
+    let bytestats = {
+      "pcie": 0.0,
+      "devices": {
+        "CPU": 0.0,
+        "GPU": 0.0,
+      }
+    }
+    dataflows.forEach(flow => {
+      if(flow.direction == DataflowDirection.CPU2CPU) {
+        bytestats['devices']['CPU'] += flow.datadimension.bytesize();
+      }
+      else if(flow.direction == DataflowDirection.GPU2GPU) {
+        bytestats['devices']['GPU'] += flow.datadimension.bytesize();
+      }
+      else if(flow.direction == DataflowDirection.CPU2GPU) {
+        bytestats['devices']['GPU'] += flow.datadimension.bytesize();
+        bytestats['pcie'] += flow.datadimension.bytesize();
+      }
+      else if(flow.direction == DataflowDirection.GPU2CPU) {
+        bytestats['devices']['CPU'] += flow.datadimension.bytesize();
+        bytestats['pcie'] += flow.datadimension.bytesize();
+      }
+    });
+    return bytestats;
+  }
+  $: dataflow_bytestats = dataflowsBytestats(dataflow);
 
   function round_decimals(num:number, decimals:number):number {
     return Math.round(num * 10**decimals)/10**decimals
@@ -29,28 +58,39 @@
   {#if pipeline != undefined && pipeline.error != undefined}
     {pipeline.error}
   {:else}
-    <ul>
-      {#each dataflow as data, i}
-        <li>
+    (aspects, channels, timesamples, polarizations, datatype)
+    <div class="dataflow">
+      {#each dataflow as flow, i}
+        <div class="flow">
+          #{i}: {flow.label}
           <br/>
-          #{i}: {#if i ==0}
-            Input
-          {:else}
-            {pipeline.modules[i-1]}
-          {/if}
+          {byte_string(flow.datadimension.bytesize())} {flow.direction}
           <br/>
-          aspects: {data.datadimension.aspects},
-          channels: {data.datadimension.channels},
-          timesamples: {data.datadimension.timesamples},
-          polarizations: {data.datadimension.polarizations},
-          datatype: {data.datadimension.datatype.label}
+          ({flow.datadimension.aspects},
+            {flow.datadimension.channels},
+            {flow.datadimension.timesamples},
+            {flow.datadimension.polarizations},
+            {flow.datadimension.datatype.label}
+          )
           <br/>
-          {byte_string(data.datadimension.bytesize())}
-        </li>
+        </div>
       {/each}
-    </ul>
+    </div>
+    <div class="dataflow_stats">
+      PCIe: {byte_string(dataflow_bytestats.pcie)}
+      CPU: {byte_string(dataflow_bytestats.devices.CPU)}
+      GPU: {byte_string(dataflow_bytestats.devices.GPU)}
+    </div>
   {/if}
 </div>
 
 <style>
+  div.dataflow {
+    display: flex;
+    flex-direction: column;
+  }
+
+  div.flow {
+    padding: 0.5%;
+  }
 </style>
