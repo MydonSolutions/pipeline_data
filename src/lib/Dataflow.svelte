@@ -2,11 +2,11 @@
   import type { Dataflow } from "../models/dataflow";
   import type { Pipeline } from "../models/pipeline";
   import type { DataDimension } from "../models/datadimensions";
-  import { Device } from "../models/device";
+  import DataflowTable from "./DataflowTable.svelte";
 
   export let pipeline:Pipeline = undefined;
   export let datadim:DataDimension = undefined;
-  $: dataflow = pipeline == undefined ? [] : pipeline.ingest(datadim);
+  $: dataflows = pipeline == undefined ? [] : pipeline.ingest(datadim);
 
   function dataflowsBytestats(dataflows:Dataflow[]) {
     let bytestats = {
@@ -28,7 +28,7 @@
     });
     return bytestats;
   }
-  $: dataflow_bytestats = dataflowsBytestats(dataflow);
+  $: dataflow_bytestats = dataflowsBytestats(dataflows);
 
   function round_decimals(num:number, decimals:number):number {
     return Math.round(num * 10**decimals)/10**decimals
@@ -50,46 +50,7 @@
 </script>
 
 <div>
-  <div class="dataflow">
-
-    <div style="grid-column: 1;">
-    </div>
-    <div style="grid-column: 2;">
-      Stage
-    </div>
-    <div style="grid-column: 3;">
-      Ingest Bytes
-    </div>
-    <div style="grid-column: 4;">
-      (ASPECTS, CHANNELS, TIMESAMPLES, POLARIZATIONS, DATATYPE)
-    </div>
-    <div style="grid-column: 5;">
-      I/O Ratio
-    </div>
-
-    {#each dataflow as flow, i}
-      <div style="grid-column: 1;">
-        #{i}:
-      </div>
-      <div style="grid-column: 2;">
-        {flow.label}
-      </div>
-      <div style="grid-column: 3;">
-        {byte_string(flow.datadim_out.bytesize())} ({flow.direction.to})
-      </div>
-      <div style="grid-column: 4;">
-        ({flow.datadim_out.aspects},
-          {flow.datadim_out.channels},
-          {flow.datadim_out.timesamples},
-          {flow.datadim_out.polarizations},
-          {flow.datadim_out.datatype.label}
-        )
-      </div>
-      <div style="grid-column: 5;">
-        @ {flow.rate}
-      </div>
-    {/each}
-  </div>
+  <DataflowTable {dataflows}/>
   {#if pipeline != undefined && pipeline.error != undefined}
     <div class="error">
       {pipeline.error}
@@ -103,11 +64,6 @@
 </div>
 
 <style>
-  div.dataflow {
-    display: grid;
-    row-gap: 5px;
-    margin-bottom: 10px;
-  }
   div.error {
     color: red;
     margin-bottom: 10px;
