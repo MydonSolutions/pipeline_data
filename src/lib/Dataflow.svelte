@@ -16,7 +16,7 @@
       }
     }
     dataflows.forEach(flow => {
-      bytestats['devices'][flow.device] += flow.datadimension.bytesize();
+      bytestats['devices'][flow.device] += flow.datadim_in.bytesize();
     });
     return bytestats;
   }
@@ -43,6 +43,7 @@
 
 <div>
   <div class="dataflow">
+
     <div style="grid-column: 1;">
     </div>
     <div style="grid-column: 2;">
@@ -57,6 +58,7 @@
     <div style="grid-column: 5;">
       Ingest Rate
     </div>
+
     {#each dataflow as flow, i}
       <div style="grid-column: 1;">
         #{i}:
@@ -65,14 +67,14 @@
         {flow.label}
       </div>
       <div style="grid-column: 3;">
-        {byte_string(flow.datadimension.bytesize())}
+        {byte_string(flow.datadim_out.bytesize())}
       </div>
       <div style="grid-column: 4;">
-        ({flow.datadimension.aspects},
-          {flow.datadimension.channels},
-          {flow.datadimension.timesamples},
-          {flow.datadimension.polarizations},
-          {flow.datadimension.datatype.label}
+        ({flow.datadim_out.aspects},
+          {flow.datadim_out.channels},
+          {flow.datadim_out.timesamples},
+          {flow.datadim_out.polarizations},
+          {flow.datadim_out.datatype.label}
         )
       </div>
       <div style="grid-column: 5;">
@@ -100,9 +102,6 @@
   }
   div.error {
     color: red;
-    margin-bottom: 10px;
-  }
-  div.dataflow-header {
     margin-bottom: 10px;
   }
 

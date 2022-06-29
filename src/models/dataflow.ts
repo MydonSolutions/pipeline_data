@@ -28,18 +28,21 @@ class DataflowDirection {
 
 class Dataflow {
   device: Device
-  datadimension: DataDimension
+  datadim_in: DataDimension
+  datadim_out: DataDimension
   rate: number
   label: string
 
   constructor(
     device: Device,
-    datadimension: DataDimension,
+    datadim_in: DataDimension,
+    datadim_out: DataDimension,
     label: string,
     rate: number,
   ) {
     this.device = device;
-    this.datadimension = datadimension;
+    this.datadim_in = datadim_in;
+    this.datadim_out = datadim_out;
     this.label = label;
     this.rate = rate;
   }
@@ -50,7 +53,8 @@ class Dataflow {
   public copy() {
     return new Dataflow(
       this.device,
-      this.datadimension.copy(),
+      this.datadim_in.copy(),
+      this.datadim_out.copy(),
       this.label,
       this.rate,
     );

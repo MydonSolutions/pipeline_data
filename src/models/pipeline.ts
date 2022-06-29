@@ -1,4 +1,4 @@
-import type { DataDimension } from "./datadimensions";
+import { DataDimension } from "./datadimensions";
 import { Dataflow } from "./dataflow";
 import { Device } from "./device";
 import {
@@ -35,7 +35,8 @@ class Pipeline {
   private transfer(to:Device, dataflow:Dataflow):Dataflow {
     return new Dataflow(
       Device.PCI,
-      dataflow.datadimension.copy(),
+      dataflow.datadim_out.copy(),
+      dataflow.datadim_out.copy(),
       `Transfer(${dataflow.device}->${to})`,
       dataflow.rate
     );
@@ -51,6 +52,7 @@ class Pipeline {
 
     let dataflow = new Dataflow(
       Device.CPU,
+      new DataDimension(0, 0, 0, 0, datadim.datatype),
       datadim,
       "Input",
       1.0

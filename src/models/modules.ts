@@ -55,11 +55,12 @@ class Accumulate implements IModule{
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
       this.device,
-      dataflow.datadimension.copy(),
+      dataflow.datadim_in.copy(),
+      dataflow.datadim_out.copy(),
       this.toString(),
       dataflow.rate
     );
-    flow.datadimension.timesamples /= this.length;
+    flow.datadim_out.timesamples /= this.length;
     return flow;
   }
 }
@@ -114,11 +115,12 @@ class Beamform implements IModule{
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
       this.device,
-      dataflow.datadimension.copy(),
+      dataflow.datadim_in.copy(),
+      dataflow.datadim_out.copy(),
       this.toString(),
       dataflow.rate
     );
-    flow.datadimension.aspects = this.beams;
+    flow.datadim_out.aspects = this.beams;
     return flow;
   }
 }
@@ -168,16 +170,17 @@ class Cast implements IModule{
   }
 
   /**
-  * ingest: change the DataDimension.datatype
+  * ingest: change the datadim_in.datatype
   */
   public ingest(dataflow:Dataflow):Dataflow {
     let flow = new Dataflow(
       this.device,
-      dataflow.datadimension.copy(),
+      dataflow.datadim_in.copy(),
+      dataflow.datadim_out.copy(),
       this.toString(),
       dataflow.rate
     );
-    flow.datadimension.datatype = this.datatype;
+    flow.datadim_out.datatype = this.datatype;
     return flow;
   }
 }
@@ -230,20 +233,21 @@ class Channelize implements IModule{
   * ingest: upchannelize by a given rate
   */
   public ingest(dataflow:Dataflow):Dataflow {
-    if (dataflow.datadimension.timesamples % this.rate != 0) {
+    if (dataflow.datadim_in.timesamples % this.rate != 0) {
       throw new Error(
-        `Channelizer rate (${this.rate}) not a factor of timesamples (${dataflow.datadimension.timesamples}).`
+        `Channelizer rate (${this.rate}) not a factor of timesamples (${dataflow.datadim_in.timesamples}).`
       );
     }
     
     let flow = new Dataflow(
       this.device,
-      dataflow.datadimension.copy(),
+      dataflow.datadim_in.copy(),
+      dataflow.datadim_out.copy(),
       this.toString(),
       dataflow.rate
     );
-    flow.datadimension.timesamples /= this.rate;
-    flow.datadimension.channels *= this.rate;
+    flow.datadim_out.timesamples /= this.rate;
+    flow.datadim_out.channels *= this.rate;
     return flow;
   }
 }
@@ -298,11 +302,12 @@ class Detect implements IModule{
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
       this.device,
-      dataflow.datadimension.copy(),
+      dataflow.datadim_in.copy(),
+      dataflow.datadim_out.copy(),
       this.toString(),
       dataflow.rate
     );
-    flow.datadimension.polarizations = this.components;
+    flow.datadim_out.polarizations = this.components;
     return flow;
   }
 }
@@ -355,14 +360,15 @@ class TimeGather implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = dataflow.datadimension.timesamples/this.length;
+    let inout_ratio = dataflow.datadim_out.timesamples/this.length;
     let flow = new Dataflow(
       this.device,
-      dataflow.datadimension.copy(),
+      dataflow.datadim_in.copy(),
+      dataflow.datadim_out.copy(),
       this.toString(),
       dataflow.rate*inout_ratio
     );
-    flow.datadimension.timesamples = this.length;
+    flow.datadim_out.timesamples = this.length;
     return flow;
   }
 }
