@@ -1,54 +1,24 @@
 <script lang="ts">
   import {
-    Accumulate, Accumulate_fromObject,
-    Beamform, Beamform_fromObject,
-    Cast, Cast_fromObject,
-    Channelize, Channelize_fromObject,
-    Detect, Detect_fromObject,
-    IModule
-  } from "./models/modules";
+  Beamform,
+  Cast,
+  Channelize,
+} from "./models/modules";
   import { COMP_FLOAT16, COMP_FLOAT32, COMP_INT8 } from "./models/datatypes";
   import { DataDimension, DataDimension_fromObject } from "./models/datadimensions";
+  import { Pipeline as Pipeline_t, Pipeline_fromObject } from "./models/pipeline";
   import Pipeline from "./lib/Pipeline.svelte";
   import InputJson from "./lib/InputJSON.svelte";
 
-  function Pipeline_fromObject(jsos:Object[]):IModule[] {
-    let pipeline:IModule[] = [];
-    jsos.forEach(module => {
-      switch (module['module']) {
-        case 'Accumulate':
-          pipeline = [...pipeline, Accumulate_fromObject(module)];
-          break;
-        case 'Beamform':
-          pipeline = [...pipeline, Beamform_fromObject(module)];
-          break;
-        case 'Cast':
-          pipeline = [...pipeline, Cast_fromObject(module)];
-          break;
-        case 'Channelize':
-          pipeline = [...pipeline, Channelize_fromObject(module)];
-          break;
-        case 'Detect':
-          pipeline = [...pipeline, Detect_fromObject(module)];
-          break;
-        default:
-          throw new Error("Unrecognised Module!");
-          break;
-      }
-    });
-    return pipeline;
-  }
-
-  let textarea_pipeline_json:IModule[] = JSON.parse(JSON.stringify(
+  let textarea_pipeline_json:Pipeline_t = JSON.parse(JSON.stringify(new Pipeline_t(
     [
       new Cast(COMP_FLOAT32),
       new Channelize(4),
       new Beamform(8),
       new Cast(COMP_FLOAT16),
     ],
-    null,
-    2
-  ));
+    "Demo"
+  )));
   $: pipeline = Pipeline_fromObject(textarea_pipeline_json);
 
   let textarea_datadim_json:DataDimension = new DataDimension(

@@ -1,38 +1,15 @@
 <script lang="ts">
+  import type { Pipeline } from "src/models/pipeline";
   import type { DataDimension } from "../models/datadimensions";
-  import type { IModule } from "../models/modules";
 
-  let error_message = undefined;
-
-  function pipeline_dataflow(
-    pipeline:IModule[],
-    datadim:DataDimension
-  ):DataDimension[] {
-    error_message = undefined;
-
-    let dataflow:DataDimension[] = [datadim];
-    for (let index = 0; index < pipeline.length; index++) {
-      const module = pipeline[index];
-      try {
-        datadim = module.ingest(datadim);
-      } catch (error:any) {
-        console.log(error)
-        error_message = error;
-        return []
-      }
-      dataflow = [...dataflow, datadim];
-    }
-    return dataflow;
-  }
-
-  export let pipeline:IModule[] = [];
+  export let pipeline:Pipeline = undefined;
   export let datadim:DataDimension = undefined;
-  $: dataflow = pipeline_dataflow(pipeline, datadim);
+  $: dataflow = pipeline.ingest(datadim);
 </script>
 
 <div>
-  {#if error_message != undefined}
-    {error_message}
+  {#if pipeline != undefined && pipeline.error != undefined}
+    {pipeline.error}
   {:else}
     <ul>
       {#each dataflow as data, i}
@@ -41,7 +18,7 @@
           #{i}: {#if i ==0}
             Input
           {:else}
-            {pipeline[i-1]}
+            {pipeline.modules[i-1]}
           {/if}
           <br/>
           aspects: {data.aspects},
