@@ -30,8 +30,79 @@ class DataType {
       this.label,
     );
   }
+
+  /**
+   * toJSON
+   */
+   public toJSON() {
+    switch (this) {
+      case INT8:
+        return 'INT8';
+      case COMP_INT8:
+        return 'COMP_INT8';
+      case INT16:
+        return 'INT16';
+      case COMP_INT16:
+        return 'COMP_INT16';
+      case INT32:
+        return 'INT32';
+      case COMP_INT32:
+        return 'COMP_INT32';
+      case INT64:
+        return 'INT64';
+      case COMP_INT64:
+        return 'COMP_INT64';
+      case FLOAT16:
+        return 'FLOAT16';
+      case COMP_FLOAT16:
+        return 'COMP_FLOAT16';
+      case FLOAT32:
+        return 'FLOAT32';
+      case COMP_FLOAT32:
+        return 'COMP_FLOAT32';
+      case FLOAT64:
+        return 'FLOAT64';
+      case COMP_FLOAT64:
+        return 'COMP_FLOAT64';
+    }
+    return {
+      "bytesize": this.bytesize,
+      "label": this.label,
+    }
+  }
 }
 function DataType_fromObject(jso:Object):DataType {
+  switch (jso) {
+    case 'INT8':
+      return INT8;
+    case 'COMP_INT8':
+      return COMP_INT8;
+    case 'INT16':
+      return INT16;
+    case 'COMP_INT16':
+      return COMP_INT16;
+    case 'INT32':
+      return INT32;
+    case 'COMP_INT32':
+      return COMP_INT32;
+    case 'INT64':
+      return INT64;
+    case 'COMP_INT64':
+      return COMP_INT64;
+    case 'FLOAT16':
+      return FLOAT16;
+    case 'COMP_FLOAT16':
+      return COMP_FLOAT16;
+    case 'FLOAT32':
+      return FLOAT32;
+    case 'COMP_FLOAT32':
+      return COMP_FLOAT32;
+    case 'FLOAT64':
+      return FLOAT64;
+    case 'COMP_FLOAT64':
+      return COMP_FLOAT64;
+  }
+
   [
     'bytesize',
     'label',
