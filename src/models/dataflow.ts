@@ -9,12 +9,20 @@ export {
 class DataflowDirection {
   from: Device
   to: Device
+
   constructor (
     from: Device,
     to: Device,
   ) {
     this.from = from;
     this.to = to;
+  }
+
+  /**
+   * toString
+   */
+  public toString() {
+    return `${this.from}->${this.to}`;
   }
 }
 
