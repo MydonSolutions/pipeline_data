@@ -7,7 +7,7 @@
     Detect, Detect_fromObject,
     IModule
   } from "./models/modules";
-  import { COMP_FLOAT16, COMP_FLOAT32, COMP_INT8, DataType_fromObject } from "./models/datatypes";
+  import { COMP_FLOAT16, COMP_FLOAT32, COMP_INT8 } from "./models/datatypes";
   import { DataDimension, DataDimension_fromObject } from "./models/datadimensions";
   import Pipeline from "./lib/Pipeline.svelte";
   import InputJson from "./lib/InputJSON.svelte";
@@ -39,7 +39,7 @@
     return pipeline;
   }
 
-  let textarea_pipeline_json:string = JSON.stringify(
+  let textarea_pipeline_json:IModule[] = JSON.parse(JSON.stringify(
     [
       new Cast(COMP_FLOAT32),
       new Channelize(4),
@@ -48,21 +48,17 @@
     ],
     null,
     2
-  );
-  $: pipeline = Pipeline_fromObject(JSON.parse(textarea_pipeline_json));
+  ));
+  $: pipeline = Pipeline_fromObject(textarea_pipeline_json);
 
-  let textarea_datadim_json:string = JSON.stringify(
-    new DataDimension(
-      20,
-      768,
-      8192,
-      2,
-      COMP_INT8
-    ),
-    null,
-    2
+  let textarea_datadim_json:DataDimension = new DataDimension(
+    20,
+    768,
+    8192,
+    2,
+    COMP_INT8
   );
-  $: datadim = DataDimension_fromObject(JSON.parse(textarea_datadim_json));
+  $: datadim = DataDimension_fromObject(textarea_datadim_json);
 </script>
 
 <main>
@@ -76,7 +72,7 @@
 
 <style>
   :root {
-    font-family: Roboto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: black;
     color: white;
   }
