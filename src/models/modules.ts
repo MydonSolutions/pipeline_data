@@ -1,6 +1,6 @@
 import { DataType, DataType_fromObject } from "./datatypes";
 import type { Device } from "./device";
-import { Dataflow } from "./dataflow";
+import { Dataflow, getDataflowDirection } from "./dataflow";
 
 export type {
   IModule,
@@ -54,7 +54,7 @@ class Accumulate implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
-      this.device,
+      getDataflowDirection(dataflow.direction.to, this.device),
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
@@ -114,7 +114,7 @@ class Beamform implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
-      this.device,
+      getDataflowDirection(dataflow.direction.to, this.device),
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
@@ -174,7 +174,7 @@ class Cast implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {
     let flow = new Dataflow(
-      this.device,
+      getDataflowDirection(dataflow.direction.to, this.device),
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
@@ -240,7 +240,7 @@ class Channelize implements IModule{
     }
     
     let flow = new Dataflow(
-      this.device,
+      getDataflowDirection(dataflow.direction.to, this.device),
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
@@ -301,7 +301,7 @@ class Detect implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
-      this.device,
+      getDataflowDirection(dataflow.direction.to, this.device),
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
@@ -362,8 +362,8 @@ class TimeGather implements IModule{
   public ingest(dataflow:Dataflow):Dataflow {    
     let inout_ratio = dataflow.datadim_out.timesamples/this.length;
     let flow = new Dataflow(
-      this.device,
-      dataflow.datadim_in.copy(),
+      getDataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadim_out.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
       dataflow.rate*inout_ratio

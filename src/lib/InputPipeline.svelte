@@ -18,7 +18,8 @@
       new Beamform(Device.GPU, 8),
       new Cast(Device.GPU, COMP_FLOAT16),
     ],
-    "Demo"
+    "Demo",
+    Device.CPU
   );
 
   let textarea_pipeline_json = JSON.parse(JSON.stringify(pipeline));

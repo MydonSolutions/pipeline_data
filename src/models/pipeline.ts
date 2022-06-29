@@ -1,5 +1,5 @@
 import { DataDimension } from "./datadimensions";
-import { Dataflow } from "./dataflow";
+import { Dataflow, getDataflowDirection } from "./dataflow";
 import { Device } from "./device";
 import {
   IModule,
@@ -18,14 +18,17 @@ export {
 class Pipeline {
   modules: IModule[];
   label: string;
+  device: Device;
   error: Error;
 
   constructor(
     modules: IModule[],
     label: string,
+    device: Device,
   ) {
     this.modules = modules;
     this.label = label;
+    this.device = device;
     this.error = undefined;
   }
 
@@ -34,10 +37,10 @@ class Pipeline {
    */
   private transfer(to:Device, dataflow:Dataflow):Dataflow {
     return new Dataflow(
-      to == Device.GPU ? Device.PCI_H2D : Device.PCI_D2H,
+      getDataflowDirection(dataflow.direction.to, to),
       dataflow.datadim_out.copy(),
       dataflow.datadim_out.copy(),
-      `Transfer(${dataflow.device}->${to})`,
+      `Transfer(${dataflow.direction.to}->${to})`,
       dataflow.rate
     );
   }
@@ -46,13 +49,13 @@ class Pipeline {
     * ingest
     */
   public ingest(
-    datadim:DataDimension
+    datadim:DataDimension,
   ):Dataflow[] {
     this.error = undefined;
 
     let dataflow = new Dataflow(
-      Device.CPU,
-      new DataDimension(0, 0, 0, 0, datadim.datatype),
+      getDataflowDirection(this.device, this.device),
+      undefined,
       datadim,
       "Input",
       1.0
@@ -61,13 +64,13 @@ class Pipeline {
     
     try {
       this.modules.forEach(module => {
-        if(module.device != dataflow.device) {
+        if(module.device != dataflow.direction.to) {
           dataflow = this.transfer(module.device, dataflow);
           dataflows = [
             ...dataflows,
             dataflow.copy()
           ];
-          dataflow.device = module.device;
+          dataflow.direction.to = module.device;
         }
   
         dataflow = module.ingest(dataflow);
@@ -81,6 +84,14 @@ class Pipeline {
       console.log(error)
       this.error = error;
     }
+    
+    if(this.device != dataflow.direction.to) {
+      dataflow = this.transfer(this.device, dataflow);
+      dataflows = [
+        ...dataflows,
+        dataflow
+      ];
+    }
      
     return dataflows;
  }
@@ -89,6 +100,7 @@ function Pipeline_fromObject(jso:Object):Pipeline {
   [
     'modules',
     'label',
+    'device',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
       throw new Error(`DataType from JSObject: Missing '${prop}' property (${jso}).`);
@@ -121,5 +133,5 @@ function Pipeline_fromObject(jso:Object):Pipeline {
         break;
     }
   });
-  return new Pipeline(modules, jso['label']);
+  return new Pipeline(modules, jso['label'], jso['device']);
 }
