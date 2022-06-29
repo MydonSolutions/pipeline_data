@@ -1,7 +1,6 @@
 import { DataType, DataType_fromObject } from "./datatypes";
-import type { DataDimension } from "./datadimensions";
 import type { Device } from "./device";
-import { Dataflow, DataflowDirection } from "./dataflow";
+import { Dataflow } from "./dataflow";
 
 export type {
   IModule,
@@ -55,7 +54,7 @@ class Accumulate implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
-      new DataflowDirection(dataflow.direction.to, this.device),
+      this.device,
       dataflow.datadimension.copy(),
       this.toString(),
       dataflow.rate
@@ -114,7 +113,7 @@ class Beamform implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
-      new DataflowDirection(dataflow.direction.to, this.device),
+      this.device,
       dataflow.datadimension.copy(),
       this.toString(),
       dataflow.rate
@@ -173,7 +172,7 @@ class Cast implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {
     let flow = new Dataflow(
-      new DataflowDirection(dataflow.direction.to, this.device),
+      this.device,
       dataflow.datadimension.copy(),
       this.toString(),
       dataflow.rate
@@ -238,7 +237,7 @@ class Channelize implements IModule{
     }
     
     let flow = new Dataflow(
-      new DataflowDirection(dataflow.direction.to, this.device),
+      this.device,
       dataflow.datadimension.copy(),
       this.toString(),
       dataflow.rate
@@ -298,7 +297,7 @@ class Detect implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
-      new DataflowDirection(dataflow.direction.to, this.device),
+      this.device,
       dataflow.datadimension.copy(),
       this.toString(),
       dataflow.rate
@@ -356,11 +355,12 @@ class TimeGather implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {    
+    let inout_ratio = dataflow.datadimension.timesamples/this.length;
     let flow = new Dataflow(
-      new DataflowDirection(dataflow.direction.to, this.device),
+      this.device,
       dataflow.datadimension.copy(),
       this.toString(),
-      dataflow.rate
+      dataflow.rate*inout_ratio
     );
     flow.datadimension.timesamples = this.length;
     return flow;

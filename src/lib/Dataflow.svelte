@@ -2,7 +2,6 @@
   import type { Dataflow } from "../models/dataflow";
   import type { Pipeline } from "../models/pipeline";
   import type { DataDimension } from "../models/datadimensions";
-  import { Device } from "../models/device";
 
   export let pipeline:Pipeline = undefined;
   export let datadim:DataDimension = undefined;
@@ -10,22 +9,13 @@
 
   function dataflowsBytestats(dataflows:Dataflow[]) {
     let bytestats = {
-      "pcie": 0.0,
       "devices": {
         "CPU": 0.0,
         "GPU": 0.0,
       }
     }
     dataflows.forEach(flow => {
-      if(flow.direction.from != flow.direction.to) {
-        bytestats['pcie'] += flow.datadimension.bytesize();
-      }
-      if(flow.direction.to == Device.CPU) {
-        bytestats['devices']['CPU'] += flow.datadimension.bytesize();
-      }
-      if(flow.direction.to == Device.GPU) {
-        bytestats['devices']['GPU'] += flow.datadimension.bytesize();
-      }
+      bytestats['devices'][flow.device] += flow.datadimension.bytesize();
     });
     return bytestats;
   }
@@ -51,42 +41,67 @@
 </script>
 
 <div>
-  {#if pipeline != undefined && pipeline.error != undefined}
-    {pipeline.error}
-  {:else}
-    (aspects, channels, timesamples, polarizations, datatype)
-    <div class="dataflow">
-      {#each dataflow as flow, i}
-        <div class="flow">
-          #{i}: {flow.label}
-          <br/>
-          {byte_string(flow.datadimension.bytesize())} {flow.direction}
-          <br/>
-          ({flow.datadimension.aspects},
-            {flow.datadimension.channels},
-            {flow.datadimension.timesamples},
-            {flow.datadimension.polarizations},
-            {flow.datadimension.datatype.label}
-          )
-          <br/>
-        </div>
-      {/each}
+  <div class="dataflow">
+    <div style="grid-column: 1;">
     </div>
-    <div class="dataflow_stats">
-      PCIe: {byte_string(dataflow_bytestats.pcie)}
-      CPU: {byte_string(dataflow_bytestats.devices.CPU)}
-      GPU: {byte_string(dataflow_bytestats.devices.GPU)}
+    <div style="grid-column: 2;">
+      Stage
+    </div>
+    <div style="grid-column: 3;">
+      Ingest Bytes
+    </div>
+    <div style="grid-column: 4;">
+      (ASPECTS, CHANNELS, TIMESAMPLES, POLARIZATIONS, DATATYPE)
+    </div>
+    <div style="grid-column: 5;">
+      Ingest Rate
+    </div>
+    {#each dataflow as flow, i}
+      <div style="grid-column: 1;">
+        #{i}:
+      </div>
+      <div style="grid-column: 2;">
+        {flow.label}
+      </div>
+      <div style="grid-column: 3;">
+        {byte_string(flow.datadimension.bytesize())}
+      </div>
+      <div style="grid-column: 4;">
+        ({flow.datadimension.aspects},
+          {flow.datadimension.channels},
+          {flow.datadimension.timesamples},
+          {flow.datadimension.polarizations},
+          {flow.datadimension.datatype.label}
+        )
+      </div>
+      <div style="grid-column: 5;">
+        @ {flow.rate}
+      </div>
+    {/each}
+  </div>
+  {#if pipeline != undefined && pipeline.error != undefined}
+    <div class="error">
+      {pipeline.error}
     </div>
   {/if}
+  <div class="dataflow_stats">
+    CPU: {byte_string(dataflow_bytestats.devices.CPU)}
+    GPU: {byte_string(dataflow_bytestats.devices.GPU)}
+  </div>
 </div>
 
 <style>
   div.dataflow {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    row-gap: 5px;
+    margin-bottom: 10px;
+  }
+  div.error {
+    color: red;
+    margin-bottom: 10px;
+  }
+  div.dataflow-header {
+    margin-bottom: 10px;
   }
 
-  div.flow {
-    padding: 0.5%;
-  }
 </style>

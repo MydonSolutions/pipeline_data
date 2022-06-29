@@ -1,14 +1,14 @@
 import type { DataDimension } from "./datadimensions";
-import { Dataflow, DataflowDirection } from "./dataflow";
+import { Dataflow } from "./dataflow";
 import { Device } from "./device";
 import {
+  IModule,
   Accumulate_fromObject,
   Beamform_fromObject,
   Cast_fromObject,
   Channelize_fromObject,
   Detect_fromObject,
   TimeGather_fromObject,
-  IModule,
 } from "./modules";
 
 export {
@@ -30,34 +30,55 @@ class Pipeline {
   }
 
   /**
+   * transfer
+   */
+  private transfer(to:Device, dataflow:Dataflow):Dataflow {
+    return new Dataflow(
+      to,
+      dataflow.datadimension.copy(),
+      `Transfer(${dataflow.device}->${to})`,
+      dataflow.rate
+    );
+  }
+
+  /**
     * ingest
     */
   public ingest(
     datadim:DataDimension
   ):Dataflow[] {
+    this.error = undefined;
+
     let dataflow = new Dataflow(
-      new DataflowDirection(Device.CPU, Device.CPU),
+      Device.CPU,
       datadim,
       "Input",
       1.0
     );
     let dataflows:Dataflow[] = [dataflow];
-
-    this.modules.forEach(module => {
-      try {
+    
+    try {
+      this.modules.forEach(module => {
+        if(module.device != dataflow.device) {
+          dataflow = this.transfer(module.device, dataflow);
+          dataflows = [
+            ...dataflows,
+            dataflow
+          ];
+        }
+  
         dataflow = module.ingest(dataflow);
-        this.error = undefined;
-      } catch (error:any) {
-        console.log(error)
-        this.error = error;
-        return []
-      }
-
-      dataflows = [
-        ...dataflows,
-        dataflow
-      ];
-    });
+  
+        dataflows = [
+          ...dataflows,
+          dataflow
+        ];
+      });
+    } catch(error:any) {
+      console.log(error)
+      this.error = error;
+    }
+     
     return dataflows;
  }
 }

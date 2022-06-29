@@ -27,19 +27,19 @@ class DataflowDirection {
 }
 
 class Dataflow {
-  direction: DataflowDirection
+  device: Device
   datadimension: DataDimension
   rate: number
   label: string
   constructor(
-    direction: DataflowDirection,
+    device: Device,
     datadimension: DataDimension,
     label: string,
     rate: number,
   ) {
-    this.direction = direction
-    this.datadimension = datadimension
-    this.label = label
-    this.rate = rate
+    this.device = device;
+    this.datadimension = datadimension;
+    this.label = label;
+    this.rate = rate;
   }
 }
