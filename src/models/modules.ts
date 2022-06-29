@@ -1,5 +1,7 @@
 import { DataType, DataType_fromObject } from "./datatypes";
 import type { DataDimension } from "./datadimensions";
+import type { Device } from "./device";
+
 export type {
   IModule,
 }
@@ -16,11 +18,14 @@ interface IModule {
 }
 
 class Accumulate implements IModule{
+  device: Device;
   length: number;
 
   constructor(
+    device: Device,
     length: number
   ) {
+    this.device = device;
     this.length = length;
   }
 
@@ -37,7 +42,8 @@ class Accumulate implements IModule{
   public toJSON() {
     return {
       "module": "Accumulate",
-      "length": this.length
+      "device": this.device,
+      "length": this.length,
     }
   }
 
@@ -52,21 +58,28 @@ class Accumulate implements IModule{
 }
 function Accumulate_fromObject(jso:Object) {
   [
+    'device',
     'length',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
       throw new Error(`Accumulate from JSObject: Missing '${prop}' property (${jso}).`);
     }
   });
-  return new Accumulate(jso['length'])
+  return new Accumulate(
+    jso['device'],
+    jso['length']
+  );
 }
 
 class Beamform implements IModule{
+  device: Device;
   beams: number;
 
   constructor(
+    device: Device,
     beams: number
   ) {
+    this.device = device;
     this.beams = beams;
   }
 
@@ -83,7 +96,8 @@ class Beamform implements IModule{
   public toJSON() {
     return {
       "module": "Beamform",
-      "beams": this.beams
+      "device": this.device,
+      "beams": this.beams,
     }
   }
 
@@ -98,21 +112,28 @@ class Beamform implements IModule{
 }
 function Beamform_fromObject(jso:Object) {
   [
+    'device',
     'beams',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
       throw new Error(`Beamform from JSObject: Missing '${prop}' property (${jso}).`);
     }
   });
-  return new Beamform(jso['beams'])
+  return new Beamform(
+    jso['device'],
+    jso['beams']
+  );
 }
 
 class Cast implements IModule{
+  device: Device;
   datatype: DataType;
 
   constructor(
+    device: Device,
     datatype: DataType
   ) {
+    this.device = device;
     this.datatype = datatype;
   }
 
@@ -129,7 +150,8 @@ class Cast implements IModule{
   public toJSON() {
     return {
       "module": "Cast",
-      "datatype": this.datatype
+      "device": this.device,
+      "datatype": this.datatype,
     }
   }
 
@@ -144,21 +166,28 @@ class Cast implements IModule{
 }
 function Cast_fromObject(jso:Object) {
   [
+    'device',
     'datatype',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
       throw new Error(`Cast from JSObject: Missing '${prop}' property (${jso}).`);
     }
   });
-  return new Cast(DataType_fromObject(jso['datatype']))
+  return new Cast(
+    jso['device'],
+    DataType_fromObject(jso['datatype'])
+  );
 }
 
 class Channelize implements IModule{
+  device: Device;
   rate: number;
 
   constructor(
+    device: Device,
     rate: number
   ) {
+    this.device = device;
     this.rate = rate;
   }
 
@@ -175,7 +204,8 @@ class Channelize implements IModule{
   public toJSON() {
     return {
       "module": "Channelize",
-      "rate": this.rate
+      "device": this.device,
+      "rate": this.rate,
     }
   }
 
@@ -197,21 +227,28 @@ class Channelize implements IModule{
 }
 function Channelize_fromObject(jso:Object) {
   [
+    'device',
     'rate',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
       throw new Error(`Channelize from JSObject: Missing '${prop}' property (${jso}).`);
     }
   });
-  return new Channelize(jso['rate'])
+  return new Channelize(
+    jso['device'],
+    jso['rate']
+  );
 }
 
 class Detect implements IModule{
+  device: Device;
   components: number;
   
   constructor(
-    components: number
+    device: Device,
+    components: number,
   ) {
+    this.device = device;
     this.components = components;
   }
 
@@ -228,7 +265,8 @@ class Detect implements IModule{
   public toJSON() {
     return {
       "module": "Detect",
-      "components": this.components
+      "device": this.device,
+      "components": this.components,
     }
   }
 
@@ -243,11 +281,15 @@ class Detect implements IModule{
 }
 function Detect_fromObject(jso:Object) {
   [
+    'device',
     'components',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
       throw new Error(`Detect from JSObject: Missing '${prop}' property (${jso}).`);
     }
   });
-  return new Detect(jso['components'])
+  return new Detect(
+    jso['device'],
+    jso['components']
+  );
 }

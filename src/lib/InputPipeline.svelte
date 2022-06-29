@@ -7,13 +7,14 @@
   import { COMP_FLOAT16, COMP_FLOAT32 } from "../models/datatypes";
   import { Pipeline, Pipeline_fromObject } from "../models/pipeline";
   import InputJson from "./InputJSON.svelte";
+  import { Device } from "../models/device";
 
   export let pipeline:Pipeline = new Pipeline(
     [
-      new Cast(COMP_FLOAT32),
-      new Channelize(4),
-      new Beamform(8),
-      new Cast(COMP_FLOAT16),
+      new Cast(Device.GPU, COMP_FLOAT32),
+      new Channelize(Device.GPU, 4),
+      new Beamform(Device.GPU, 8),
+      new Cast(Device.GPU, COMP_FLOAT16),
     ],
     "Demo"
   );

@@ -1,10 +1,10 @@
 import type { DataDimension } from "./datadimensions";
 import {
-  Accumulate, Accumulate_fromObject,
-  Beamform, Beamform_fromObject,
-  Cast, Cast_fromObject,
-  Channelize, Channelize_fromObject,
-  Detect, Detect_fromObject,
+  Accumulate_fromObject,
+  Beamform_fromObject,
+  Cast_fromObject,
+  Channelize_fromObject,
+  Detect_fromObject,
   IModule
 } from "./modules";
 
