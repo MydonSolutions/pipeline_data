@@ -321,3 +321,62 @@ function Detect_fromObject(jso:Object) {
     jso['components']
   );
 }
+
+class TimeGather implements IModule{
+  device: Device;
+  length: number;
+
+  constructor(
+    device: Device,
+    length: number
+  ) {
+    this.device = device;
+    this.length = length;
+  }
+
+  /**
+   * toString
+   */
+  public toString() {
+    return  `TimeGather(${this.length})`;
+  }
+
+  /**
+   * toJSON
+   */
+  public toJSON() {
+    return {
+      "module": "TimeGather",
+      "device": this.device,
+      "length": this.length,
+    }
+  }
+
+  /**
+  * ingest: reduce the number of timesamples
+  */
+  public ingest(dataflow:Dataflow):Dataflow {    
+    let flow = new Dataflow(
+      new DataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadimension.copy(),
+      this.toString(),
+      dataflow.rate
+    );
+    flow.datadimension.timesamples = this.length;
+    return flow;
+  }
+}
+function TimeGather_fromObject(jso:Object) {
+  [
+    'device',
+    'length',
+  ].forEach(prop => {
+    if(!jso.hasOwnProperty(prop)) {
+      throw new Error(`TimeGather from JSObject: Missing '${prop}' property (${jso}).`);
+    }
+  });
+  return new TimeGather(
+    jso['device'],
+    jso['length']
+  );
+}

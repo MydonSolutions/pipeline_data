@@ -1,9 +1,10 @@
 <script lang="ts">
   import {
-  Beamform,
-  Cast,
-  Channelize,
-} from "../models/modules";
+    Beamform,
+    Cast,
+    Channelize,
+    TimeGather,
+  } from "../models/modules";
   import { COMP_FLOAT16, COMP_FLOAT32 } from "../models/datatypes";
   import { Pipeline, Pipeline_fromObject } from "../models/pipeline";
   import InputJson from "./InputJSON.svelte";
@@ -11,8 +12,9 @@
 
   export let pipeline:Pipeline = new Pipeline(
     [
+      new TimeGather(Device.CPU, 262144),
       new Cast(Device.GPU, COMP_FLOAT32),
-      new Channelize(Device.GPU, 4),
+      new Channelize(Device.GPU, 262144),
       new Beamform(Device.GPU, 8),
       new Cast(Device.GPU, COMP_FLOAT16),
     ],
