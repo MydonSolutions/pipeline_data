@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Dataflow, DataflowDirection } from "../models/dataflow";
+  import type { Dataflow } from "../models/dataflow";
   import type { Pipeline } from "../models/pipeline";
   import type { DataDimension } from "../models/datadimensions";
+  import { Device } from "../models/device";
 
   export let pipeline:Pipeline = undefined;
   export let datadim:DataDimension = undefined;
@@ -16,19 +17,14 @@
       }
     }
     dataflows.forEach(flow => {
-      if(flow.direction == DataflowDirection.CPU2CPU) {
-        bytestats['devices']['CPU'] += flow.datadimension.bytesize();
-      }
-      else if(flow.direction == DataflowDirection.GPU2GPU) {
-        bytestats['devices']['GPU'] += flow.datadimension.bytesize();
-      }
-      else if(flow.direction == DataflowDirection.CPU2GPU) {
-        bytestats['devices']['GPU'] += flow.datadimension.bytesize();
+      if(flow.direction.from != flow.direction.to) {
         bytestats['pcie'] += flow.datadimension.bytesize();
       }
-      else if(flow.direction == DataflowDirection.GPU2CPU) {
+      if(flow.direction.to == Device.CPU) {
         bytestats['devices']['CPU'] += flow.datadimension.bytesize();
-        bytestats['pcie'] += flow.datadimension.bytesize();
+      }
+      if(flow.direction.to == Device.GPU) {
+        bytestats['devices']['GPU'] += flow.datadimension.bytesize();
       }
     });
     return bytestats;

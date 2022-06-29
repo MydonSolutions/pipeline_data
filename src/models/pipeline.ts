@@ -1,5 +1,5 @@
 import type { DataDimension } from "./datadimensions";
-import { Dataflow, DataflowDirection, getDataflowDirection } from "./dataflow";
+import { Dataflow, DataflowDirection } from "./dataflow";
 import { Device } from "./device";
 import {
   Accumulate_fromObject,
@@ -7,7 +7,8 @@ import {
   Cast_fromObject,
   Channelize_fromObject,
   Detect_fromObject,
-  IModule
+  TimeGather_fromObject,
+  IModule,
 } from "./modules";
 
 export {
@@ -34,32 +35,30 @@ class Pipeline {
   public ingest(
     datadim:DataDimension
   ):Dataflow[] {
-    this.error = undefined;
+    let dataflow = new Dataflow(
+      new DataflowDirection(Device.CPU, Device.CPU),
+      datadim,
+      "Input",
+      1.0
+    );
+    let dataflows:Dataflow[] = [dataflow];
 
-    let lastDevice = Device.CPU;
-    let dataflow:Dataflow[] = [
-      new Dataflow(DataflowDirection.CPU2CPU, datadim, "Input")
-    ];
     this.modules.forEach(module => {
       try {
-        datadim = module.ingest(datadim);
+        dataflow = module.ingest(dataflow);
+        this.error = undefined;
       } catch (error:any) {
         console.log(error)
         this.error = error;
         return []
       }
 
-      dataflow = [
-        ...dataflow,
-        new Dataflow(
-          getDataflowDirection(lastDevice, module.device),
-          datadim,
-          module.toString()
-        )
+      dataflows = [
+        ...dataflows,
+        dataflow
       ];
-      lastDevice = module.device;
     });
-    return dataflow;
+    return dataflows;
  }
 }
 function Pipeline_fromObject(jso:Object):Pipeline {
@@ -89,6 +88,9 @@ function Pipeline_fromObject(jso:Object):Pipeline {
         break;
       case 'Detect':
         modules = [...modules, Detect_fromObject(module)];
+        break;
+      case 'TimeGather':
+        modules = [...modules, TimeGather_fromObject(module)];
         break;
       default:
         throw new Error("Unrecognised Module!");

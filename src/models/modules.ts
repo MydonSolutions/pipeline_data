@@ -1,6 +1,7 @@
 import { DataType, DataType_fromObject } from "./datatypes";
 import type { DataDimension } from "./datadimensions";
 import type { Device } from "./device";
+import { Dataflow, DataflowDirection } from "./dataflow";
 
 export type {
   IModule,
@@ -11,11 +12,12 @@ export {
   Cast, Cast_fromObject,
   Channelize, Channelize_fromObject,
   Detect, Detect_fromObject,
+  TimeGather, TimeGather_fromObject,
 }
 
 interface IModule {
   device: Device;
-  ingest(datadim:DataDimension):DataDimension;
+  ingest(dataflow:Dataflow):Dataflow;
 }
 
 class Accumulate implements IModule{
@@ -51,10 +53,15 @@ class Accumulate implements IModule{
   /**
   * ingest: reduce the number of timesamples
   */
-  public ingest(datadim:DataDimension):DataDimension {    
-    let outdim = datadim.copy();
-    outdim.timesamples /= this.length;
-    return outdim;
+  public ingest(dataflow:Dataflow):Dataflow {    
+    let flow = new Dataflow(
+      new DataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadimension.copy(),
+      this.toString(),
+      dataflow.rate
+    );
+    flow.datadimension.timesamples /= this.length;
+    return flow;
   }
 }
 function Accumulate_fromObject(jso:Object) {
@@ -105,10 +112,15 @@ class Beamform implements IModule{
   /**
   * ingest: change the number of sources (from antenna to beams)
   */
-  public ingest(datadim:DataDimension):DataDimension {    
-    let outdim = datadim.copy();
-    outdim.aspects = this.beams;
-    return outdim;
+  public ingest(dataflow:Dataflow):Dataflow {    
+    let flow = new Dataflow(
+      new DataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadimension.copy(),
+      this.toString(),
+      dataflow.rate
+    );
+    flow.datadimension.aspects = this.beams;
+    return flow;
   }
 }
 function Beamform_fromObject(jso:Object) {
@@ -159,10 +171,15 @@ class Cast implements IModule{
   /**
   * ingest: change the DataDimension.datatype
   */
-  public ingest(datadim:DataDimension):DataDimension {
-    let outdim = datadim.copy();
-    outdim.datatype = this.datatype;
-    return outdim;
+  public ingest(dataflow:Dataflow):Dataflow {
+    let flow = new Dataflow(
+      new DataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadimension.copy(),
+      this.toString(),
+      dataflow.rate
+    );
+    flow.datadimension.datatype = this.datatype;
+    return flow;
   }
 }
 function Cast_fromObject(jso:Object) {
@@ -213,17 +230,22 @@ class Channelize implements IModule{
   /**
   * ingest: upchannelize by a given rate
   */
-  public ingest(datadim:DataDimension):DataDimension {
-    if (datadim.timesamples % this.rate != 0) {
+  public ingest(dataflow:Dataflow):Dataflow {
+    if (dataflow.datadimension.timesamples % this.rate != 0) {
       throw new Error(
-        `Channelizer rate (${this.rate}) not a factor of timesamples (${datadim.timesamples}).`
+        `Channelizer rate (${this.rate}) not a factor of timesamples (${dataflow.datadimension.timesamples}).`
       );
     }
     
-    let outdim = datadim.copy();
-    outdim.timesamples /= this.rate;
-    outdim.channels *= this.rate;
-    return outdim;
+    let flow = new Dataflow(
+      new DataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadimension.copy(),
+      this.toString(),
+      dataflow.rate
+    );
+    flow.datadimension.timesamples /= this.rate;
+    flow.datadimension.channels *= this.rate;
+    return flow;
   }
 }
 function Channelize_fromObject(jso:Object) {
@@ -274,10 +296,15 @@ class Detect implements IModule{
   /**
   * ingest: collapse the polarisations
   */
-  public ingest(datadim:DataDimension):DataDimension {    
-    let outdim = datadim.copy();
-    outdim.polarizations = this.components;
-    return outdim;
+  public ingest(dataflow:Dataflow):Dataflow {    
+    let flow = new Dataflow(
+      new DataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadimension.copy(),
+      this.toString(),
+      dataflow.rate
+    );
+    flow.datadimension.polarizations = this.components;
+    return flow;
   }
 }
 function Detect_fromObject(jso:Object) {

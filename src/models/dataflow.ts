@@ -1,49 +1,37 @@
 import type { DataDimension } from "./datadimensions";
-import { Device } from "./device";
+import type { Device } from "./device";
 
 export {
   Dataflow,
-  DataflowDirection,
-  getDataflowDirection
+  DataflowDirection
 }
 
-enum DataflowDirection {
-  CPU2CPU = "CPU->CPU",
-  CPU2GPU = "CPU->GPU",
-  GPU2GPU = "GPU->GPU",
-  GPU2CPU = "GPU->CPU"
-}
-
-function getDataflowDirection(from:Device, to:Device) {
-  if(from == Device.CPU) {
-    switch (to) {
-      case Device.CPU:
-        return DataflowDirection.CPU2CPU
-      case Device.GPU:
-        return DataflowDirection.CPU2GPU
-    }
-  }
-  else if(from == Device.GPU) {
-    switch (to) {
-      case Device.GPU:
-        return DataflowDirection.GPU2GPU
-      case Device.CPU:
-        return DataflowDirection.GPU2CPU
-    }
+class DataflowDirection {
+  from: Device
+  to: Device
+  constructor (
+    from: Device,
+    to: Device,
+  ) {
+    this.from = from;
+    this.to = to;
   }
 }
 
 class Dataflow {
   direction: DataflowDirection
   datadimension: DataDimension
+  rate: number
   label: string
   constructor(
     direction: DataflowDirection,
     datadimension: DataDimension,
     label: string,
+    rate: number,
   ) {
     this.direction = direction
     this.datadimension = datadimension
     this.label = label
+    this.rate = rate
   }
 }
