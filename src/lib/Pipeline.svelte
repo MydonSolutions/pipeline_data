@@ -39,13 +39,13 @@
             {pipeline.modules[i-1]}
           {/if}
           <br/>
-          aspects: {data.aspects},
-          channels: {data.channels},
-          timesamples: {data.timesamples},
-          polarizations: {data.polarizations},
-          datatype: {data.datatype.label}
+          aspects: {data.datadimension.aspects},
+          channels: {data.datadimension.channels},
+          timesamples: {data.datadimension.timesamples},
+          polarizations: {data.datadimension.polarizations},
+          datatype: {data.datadimension.datatype.label}
           <br/>
-          {byte_string(data.bytesize())}
+          {byte_string(data.datadimension.bytesize())}
         </li>
       {/each}
     </ul>

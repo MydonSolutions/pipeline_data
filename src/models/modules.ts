@@ -14,6 +14,7 @@ export {
 }
 
 interface IModule {
+  device: Device;
   ingest(datadim:DataDimension):DataDimension;
 }
 

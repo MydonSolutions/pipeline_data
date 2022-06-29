@@ -1,4 +1,6 @@
 import type { DataDimension } from "./datadimensions";
+import { Dataflow, DataflowDirection, getDataflowDirection } from "./dataflow";
+import { Device } from "./device";
 import {
   Accumulate_fromObject,
   Beamform_fromObject,
@@ -41,10 +43,11 @@ class Pipeline {
     */
   public ingest(
     datadim:DataDimension
-  ):DataDimension[] {
+  ):Dataflow[] {
     this.error = undefined;
 
-    let dataflow:DataDimension[] = [datadim];
+    let lastDevice = Device.CPU;
+    let dataflow:Dataflow[] = [new Dataflow(DataflowDirection.CPU2CPU, datadim)];
     this.modules.forEach(module => {
       try {
         datadim = module.ingest(datadim);
@@ -53,7 +56,15 @@ class Pipeline {
         this.error = error;
         return []
       }
-      dataflow = [...dataflow, datadim];
+      
+      dataflow = [
+        ...dataflow,
+        new Dataflow(
+          getDataflowDirection(lastDevice, module.device),
+          datadim,
+        )
+      ];
+      lastDevice = module.device;
     });
     return dataflow;
  }
