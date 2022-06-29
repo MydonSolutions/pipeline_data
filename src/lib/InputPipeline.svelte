@@ -22,7 +22,8 @@
       new Cast(Device.GPU, CF16),
     ],
     "Demo",
-    Device.CPU
+    Device.CPU,
+    1
   );
 
   let textarea_pipeline_json = JSON.parse(JSON.stringify(pipeline));

@@ -20,16 +20,19 @@ class Pipeline {
   modules: IModule[];
   label: string;
   device: Device;
+  ingestrate: number;
   error: Error;
 
   constructor(
     modules: IModule[],
     label: string,
     device: Device,
+    ingestrate: number,
   ) {
     this.modules = modules;
     this.label = label;
     this.device = device;
+    this.ingestrate = ingestrate;
     this.error = undefined;
   }
 
@@ -59,7 +62,7 @@ class Pipeline {
       undefined,
       datadim,
       "Input",
-      1.0
+      this.ingestrate
     );
     let dataflows:Dataflow[] = [dataflow];
     
