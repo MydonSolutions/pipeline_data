@@ -6,7 +6,7 @@
     GatherTime,
     LoopChannel,
   } from "../models/modules";
-  import { COMP_FLOAT16, COMP_FLOAT32 } from "../models/datatypes";
+  import { CF16, CF32 } from "../models/datatypes";
   import { Pipeline, Pipeline_fromObject } from "../models/pipeline";
   import InputJson from "./InputJSON.svelte";
   import { Device } from "../models/device";
@@ -15,11 +15,11 @@
     [
       new GatherTime(Device.CPU, 262144),
       new LoopChannel(Device.CPU, 1),
-      new Cast(Device.GPU, COMP_FLOAT32),
+      new Cast(Device.GPU, CF32),
       new Channelize(Device.GPU, 262144),
       new LoopChannel(Device.GPU, 32),
       new Beamform(Device.GPU, 8),
-      new Cast(Device.GPU, COMP_FLOAT16),
+      new Cast(Device.GPU, CF16),
     ],
     "Demo",
     Device.CPU

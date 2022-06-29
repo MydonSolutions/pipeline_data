@@ -1,12 +1,12 @@
 export {
   DataType, DataType_fromObject,
-  INT8, COMP_INT8,
-  INT16, COMP_INT16,
-  INT32, COMP_INT32,
-  INT64, COMP_INT64,
-  FLOAT16, COMP_FLOAT16,
-  FLOAT32, COMP_FLOAT32,
-  FLOAT64, COMP_FLOAT64
+  I8, CI8,
+  I16, CI16,
+  I32, CI32,
+  I64, CI64,
+  F16, CF16,
+  F32, CF32,
+  F64, CF64
 }
 
 class DataType {
@@ -36,34 +36,34 @@ class DataType {
    */
    public toJSON() {
     switch (this) {
-      case INT8:
-        return 'INT8';
-      case COMP_INT8:
-        return 'COMP_INT8';
-      case INT16:
-        return 'INT16';
-      case COMP_INT16:
-        return 'COMP_INT16';
-      case INT32:
-        return 'INT32';
-      case COMP_INT32:
-        return 'COMP_INT32';
-      case INT64:
-        return 'INT64';
-      case COMP_INT64:
-        return 'COMP_INT64';
-      case FLOAT16:
-        return 'FLOAT16';
-      case COMP_FLOAT16:
-        return 'COMP_FLOAT16';
-      case FLOAT32:
-        return 'FLOAT32';
-      case COMP_FLOAT32:
-        return 'COMP_FLOAT32';
-      case FLOAT64:
-        return 'FLOAT64';
-      case COMP_FLOAT64:
-        return 'COMP_FLOAT64';
+      case I8:
+        return 'I8';
+      case CI8:
+        return 'CI8';
+      case I16:
+        return 'I16';
+      case CI16:
+        return 'CI16';
+      case I32:
+        return 'I32';
+      case CI32:
+        return 'CI32';
+      case I64:
+        return 'I64';
+      case CI64:
+        return 'CI64';
+      case F16:
+        return 'F16';
+      case CF16:
+        return 'CF16';
+      case F32:
+        return 'F32';
+      case CF32:
+        return 'CF32';
+      case F64:
+        return 'F64';
+      case CF64:
+        return 'CF64';
     }
     return {
       "bytesize": this.bytesize,
@@ -73,34 +73,34 @@ class DataType {
 }
 function DataType_fromObject(jso:Object):DataType {
   switch (jso) {
-    case 'INT8':
-      return INT8;
-    case 'COMP_INT8':
-      return COMP_INT8;
-    case 'INT16':
-      return INT16;
-    case 'COMP_INT16':
-      return COMP_INT16;
-    case 'INT32':
-      return INT32;
-    case 'COMP_INT32':
-      return COMP_INT32;
-    case 'INT64':
-      return INT64;
-    case 'COMP_INT64':
-      return COMP_INT64;
-    case 'FLOAT16':
-      return FLOAT16;
-    case 'COMP_FLOAT16':
-      return COMP_FLOAT16;
-    case 'FLOAT32':
-      return FLOAT32;
-    case 'COMP_FLOAT32':
-      return COMP_FLOAT32;
-    case 'FLOAT64':
-      return FLOAT64;
-    case 'COMP_FLOAT64':
-      return COMP_FLOAT64;
+    case 'I8':
+      return I8;
+    case 'CI8':
+      return CI8;
+    case 'I16':
+      return I16;
+    case 'CI16':
+      return CI16;
+    case 'I32':
+      return I32;
+    case 'CI32':
+      return CI32;
+    case 'I64':
+      return I64;
+    case 'CI64':
+      return CI64;
+    case 'F16':
+      return F16;
+    case 'CF16':
+      return CF16;
+    case 'F32':
+      return F32;
+    case 'CF32':
+      return CF32;
+    case 'F64':
+      return F64;
+    case 'CF64':
+      return CF64;
   }
 
   [
@@ -117,23 +117,23 @@ function DataType_fromObject(jso:Object):DataType {
   );
 }
 
-const INT8  = new DataType(1, 'INT8');
-const COMP_INT8  = new DataType(2*1, 'COMP_INT8');
+const I8  = new DataType(1, 'I8');
+const CI8  = new DataType(2*1, 'CI8');
 
-const INT16 = new DataType(2, 'INT16');
-const COMP_INT16 = new DataType(2*2, 'COMP_INT16');
+const I16 = new DataType(2, 'I16');
+const CI16 = new DataType(2*2, 'CI16');
 
-const INT32 = new DataType(4, 'INT32');
-const COMP_INT32 = new DataType(2*4, 'COMP_INT32');
+const I32 = new DataType(4, 'I32');
+const CI32 = new DataType(2*4, 'CI32');
 
-const INT64 = new DataType(8, 'INT64');
-const COMP_INT64 = new DataType(2*8, 'COMP_INT64');
+const I64 = new DataType(8, 'I64');
+const CI64 = new DataType(2*8, 'CI64');
 
-const FLOAT16 = new DataType(2, 'FLOAT16');
-const COMP_FLOAT16 = new DataType(2*2, 'COMP_FLOAT16');
+const F16 = new DataType(2, 'F16');
+const CF16 = new DataType(2*2, 'CF16');
 
-const FLOAT32 = new DataType(4, 'FLOAT32');
-const COMP_FLOAT32 = new DataType(2*4, 'COMP_FLOAT32');
+const F32 = new DataType(4, 'F32');
+const CF32 = new DataType(2*4, 'CF32');
 
-const FLOAT64 = new DataType(8, 'FLOAT64');
-const COMP_FLOAT64 = new DataType(2*8, 'COMP_FLOAT64');
+const F64 = new DataType(8, 'F64');
+const CF64 = new DataType(2*8, 'CF64');

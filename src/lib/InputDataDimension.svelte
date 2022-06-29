@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { COMP_INT8 } from "../models/datatypes";
+  import { CI8 } from "../models/datatypes";
   import { DataDimension, DataDimension_fromObject } from "../models/datadimensions";
   import InputJson from "./InputJSON.svelte";
 
@@ -8,7 +8,7 @@
     32,
     16384,
     2,
-    COMP_INT8
+    CI8
   );
 
   let textarea_datadim_json = datadim;
