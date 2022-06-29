@@ -6,20 +6,12 @@
 } from "./models/modules";
   import { COMP_FLOAT16, COMP_FLOAT32, COMP_INT8 } from "./models/datatypes";
   import { DataDimension, DataDimension_fromObject } from "./models/datadimensions";
-  import { Pipeline as Pipeline_t, Pipeline_fromObject } from "./models/pipeline";
+  import type { Pipeline as Pipeline_t } from "./models/pipeline";
   import Pipeline from "./lib/Pipeline.svelte";
   import InputJson from "./lib/InputJSON.svelte";
+import InputPipeline from "./lib/InputPipeline.svelte";
 
-  let textarea_pipeline_json:Pipeline_t = JSON.parse(JSON.stringify(new Pipeline_t(
-    [
-      new Cast(COMP_FLOAT32),
-      new Channelize(4),
-      new Beamform(8),
-      new Cast(COMP_FLOAT16),
-    ],
-    "Demo"
-  )));
-  $: pipeline = Pipeline_fromObject(textarea_pipeline_json);
+  let pipeline: Pipeline_t;
 
   let textarea_datadim_json:DataDimension = new DataDimension(
     20,
@@ -34,7 +26,7 @@
 <main>
   <h1>Pipeline Dataflow View</h1>
   <div class="inputs">
-    <InputJson title="Pipeline" bind:value={textarea_pipeline_json}/>
+    <InputPipeline bind:pipeline/>
     <InputJson title="Input DataDimension" bind:value={textarea_datadim_json}/>
   </div>
   <Pipeline {pipeline} {datadim}/>

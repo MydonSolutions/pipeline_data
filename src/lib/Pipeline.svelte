@@ -4,7 +4,7 @@
 
   export let pipeline:Pipeline = undefined;
   export let datadim:DataDimension = undefined;
-  $: dataflow = pipeline.ingest(datadim);
+  $: dataflow = pipeline == undefined ? [] : pipeline.ingest(datadim);
 
   function round_decimals(num:number, decimals:number):number {
     return Math.round(num * 10**decimals)/10**decimals
