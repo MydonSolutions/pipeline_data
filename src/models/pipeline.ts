@@ -9,6 +9,7 @@ import {
   Channelize_fromObject,
   Detect_fromObject,
   GatherTime_fromObject,
+  LoopChannel_fromObject,
 } from "./modules";
 
 export {
@@ -127,6 +128,9 @@ function Pipeline_fromObject(jso:Object):Pipeline {
         break;
       case 'GatherTime':
         modules = [...modules, GatherTime_fromObject(module)];
+        break;
+      case 'LoopChannel':
+        modules = [...modules, LoopChannel_fromObject(module)];
         break;
       default:
         throw new Error("Unrecognised Module!");

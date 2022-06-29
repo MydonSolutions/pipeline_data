@@ -12,6 +12,7 @@ export {
   Channelize, Channelize_fromObject,
   Detect, Detect_fromObject,
   GatherTime, GatherTime_fromObject,
+  LoopChannel, LoopChannel_fromObject,
 }
 
 interface IModule {
@@ -323,6 +324,67 @@ function Detect_fromObject(jso:Object) {
   return new Detect(
     jso['device'],
     jso['components']
+  );
+}
+
+class LoopChannel implements IModule{
+  device: Device;
+  rate: number;
+
+  constructor(
+    device: Device,
+    rate: number
+  ) {
+    this.device = device;
+    this.rate = rate;
+  }
+
+  /**
+   * toString
+   */
+  public toString() {
+    return  `LoopChannel(${this.rate})`;
+  }
+
+  /**
+   * toJSON
+   */
+  public toJSON() {
+    return {
+      "module": "LoopChannel",
+      "device": this.device,
+      "rate": this.rate,
+    }
+  }
+
+  /**
+  * ingest: reduce the number of timesamples
+  */
+  public ingest(dataflow:Dataflow):Dataflow {    
+    let inout_ratio = dataflow.datadim_out.channels/this.rate;
+    let flow = new Dataflow(
+      getDataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadim_out.copy(),
+      dataflow.datadim_out.copy(),
+      this.toString(),
+      dataflow.rate*inout_ratio
+    );
+    flow.datadim_out.channels = this.rate;
+    return flow;
+  }
+}
+function LoopChannel_fromObject(jso:Object) {
+  [
+    'device',
+    'rate',
+  ].forEach(prop => {
+    if(!jso.hasOwnProperty(prop)) {
+      throw new Error(`LoopChannel from JSObject: Missing '${prop}' property (${jso}).`);
+    }
+  });
+  return new LoopChannel(
+    jso['device'],
+    jso['rate']
   );
 }
 

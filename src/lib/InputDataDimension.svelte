@@ -4,9 +4,9 @@
   import InputJson from "./InputJSON.svelte";
 
   export let datadim:DataDimension = new DataDimension(
-    20,
-    768,
-    8192,
+    27,
+    32,
+    16384,
     2,
     COMP_INT8
   );

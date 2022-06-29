@@ -64,7 +64,7 @@
       (ASPECTS, CHANNELS, TIMESAMPLES, POLARIZATIONS, DATATYPE)
     </div>
     <div style="grid-column: 5;">
-      Ingest Rate
+      I/O Ratio
     </div>
 
     {#each dataflow as flow, i}
