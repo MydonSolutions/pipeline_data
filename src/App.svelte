@@ -1,33 +1,20 @@
 <script lang="ts">
-  import {
-  Beamform,
-  Cast,
-  Channelize,
-} from "./models/modules";
-  import { COMP_FLOAT16, COMP_FLOAT32, COMP_INT8 } from "./models/datatypes";
-  import { DataDimension, DataDimension_fromObject } from "./models/datadimensions";
+  import type { DataDimension } from "./models/datadimensions";
   import type { Pipeline as Pipeline_t } from "./models/pipeline";
   import Pipeline from "./lib/Pipeline.svelte";
-  import InputJson from "./lib/InputJSON.svelte";
-import InputPipeline from "./lib/InputPipeline.svelte";
+  import InputPipeline from "./lib/InputPipeline.svelte";
+  import InputDataDimension from "./lib/InputDataDimension.svelte";
 
   let pipeline: Pipeline_t;
+  let datadim:DataDimension;
 
-  let textarea_datadim_json:DataDimension = new DataDimension(
-    20,
-    768,
-    8192,
-    2,
-    COMP_INT8
-  );
-  $: datadim = DataDimension_fromObject(textarea_datadim_json);
 </script>
 
 <main>
   <h1>Pipeline Dataflow View</h1>
   <div class="inputs">
     <InputPipeline bind:pipeline/>
-    <InputJson title="Input DataDimension" bind:value={textarea_datadim_json}/>
+    <InputDataDimension bind:datadim/>
   </div>
   <Pipeline {pipeline} {datadim}/>
 </main>

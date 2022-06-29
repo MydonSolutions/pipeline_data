@@ -8,7 +8,7 @@
   import { Pipeline, Pipeline_fromObject } from "../models/pipeline";
   import InputJson from "./InputJSON.svelte";
 
-  export let pipeline = new Pipeline(
+  export let pipeline:Pipeline = new Pipeline(
     [
       new Cast(COMP_FLOAT32),
       new Channelize(4),
