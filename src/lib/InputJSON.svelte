@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+  const dispatch = createEventDispatcher();
 
   let error_message = undefined;
 
@@ -10,6 +12,7 @@
     try {
       value = JSON.parse(value_json)
       error_message = undefined;
+      dispatch('parse', value)
     } catch (error:any) {
       error_message = error;
     }
@@ -17,7 +20,7 @@
 
 </script>
 
-<div>
+<main>
   {#if title != undefined}
     {title}:
   {/if}
@@ -27,10 +30,10 @@
       {error_message}
     </div>
   {/if}
-</div>
+</main>
 
 <style>
-  div {
+  main {
     width: 100%;
     height: 100%;
     display: flex;
