@@ -24,7 +24,9 @@
       8192,
       2,
       COMP_INT8
-    )
+    ),
+    null,
+    2
   );
   
   $: datadim = DataDimension_fromObject(JSON.parse(textarea_datadim_json));
@@ -33,9 +35,12 @@
 <main>
   <h1>Pipeline Dataflow View</h1>
   <div class="inputs">
-    DataDim:
-    <textarea bind:value={textarea_datadim_json}/>
+    <div>
+      Input DataDimension:
+      <textarea bind:value={textarea_datadim_json}/>
+    </div>
   </div>
+  <br>
   <Pipeline {pipeline} {datadim}/>
 </main>
 
@@ -66,14 +71,14 @@
     width:100%;
     height:250px;
     display:flex;
-    flex-direction: column;
     justify-content: space-around;
   }
 
   textarea {
-    width:70%;
+    width:100%;
     height:100%;
     align-self: center;
+    resize: none;
   }
 
   @media (min-width: 480px) {
