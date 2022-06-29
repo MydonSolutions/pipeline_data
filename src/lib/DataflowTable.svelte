@@ -11,13 +11,13 @@
     if (bytes < 1e3) {
       return `${bytes} Bytes`;
     } else if (bytes < 1e6) {
-      return `${(round_decimals(bytes, 3)/1e3).toFixed(3)} KBytes`;
+      return `${(round_decimals(bytes, 3)/1e3).toFixed(3)} KB`;
     } else if (bytes < 1e9) {
-      return `${(round_decimals(bytes, 3)/1e6).toFixed(3)} MBytes`;
+      return `${(round_decimals(bytes, 3)/1e6).toFixed(3)} MB`;
     } else if (bytes < 1e12) {
-      return `${(round_decimals(bytes, 3)/1e9).toFixed(3)} GBytes`;
+      return `${(round_decimals(bytes, 3)/1e9).toFixed(3)} GB`;
     } else if (bytes < 1e16) {
-      return `${(round_decimals(bytes, 3)/1e12).toFixed(3)} TBytes`;
+      return `${(round_decimals(bytes, 3)/1e12).toFixed(3)} TB`;
     }
   }
 </script>
@@ -38,6 +38,9 @@
   </div>
   <div style="grid-column: 5;">
     I/O Ratio (Relative)
+  </div>
+  <div style="grid-column: 6;">
+    Throughput
   </div>
 
   {#each dataflows as flow, i}
@@ -65,6 +68,9 @@
       {#if i > 0}
         (x{flow.rate/dataflows[i-1].rate})
       {/if}
+    </div>
+    <div style="grid-column: 6;">
+      {byte_string(flow.rate*flow.datadim_out.bytesize())}
     </div>
   {/each}
 </div>
