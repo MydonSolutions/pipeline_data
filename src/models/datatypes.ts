@@ -1,5 +1,5 @@
 export {
-  DataType,
+  DataType, DataType_fromObject,
   INT8, COMP_INT8,
   INT16, COMP_INT16,
   INT32, COMP_INT32,
@@ -30,6 +30,20 @@ class DataType {
       this.label,
     );
   }
+}
+function DataType_fromObject(jso:Object):DataType {
+  [
+    'bytesize',
+    'label',
+  ].forEach(prop => {
+    if(!jso.hasOwnProperty(prop)) {
+      throw new Error(`DataType from JSObject: Missing '${prop}' property (${jso}).`);
+    }
+  });
+  return new DataType(
+    jso['bytesize'],
+    jso['label']
+  );
 }
 
 const INT8  = new DataType(1, 'INT8');

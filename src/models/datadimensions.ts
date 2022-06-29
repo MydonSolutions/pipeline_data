@@ -1,5 +1,5 @@
-import type { DataType } from "./datatypes";
-export { DataDimension }
+import { DataType, DataType_fromObject } from "./datatypes";
+export { DataDimension, DataDimension_fromObject }
 
 class DataDimension {
   aspects: number;
@@ -45,4 +45,25 @@ class DataDimension {
       this.polarizations *
       this.datatype.bytesize;
   }
+}
+function DataDimension_fromObject(jso:Object):DataDimension {  
+  [
+    'aspects',
+    'channels',
+    'timesamples',
+    'polarizations',
+    'datatype',
+  ].forEach(prop => {
+    if(!jso.hasOwnProperty(prop)) {
+      throw new Error(`DataDimension from JSObject: Missing '${prop}' property (${jso}).`);
+    }
+  });
+
+  return new DataDimension(
+    jso['aspects'],
+    jso['channels'],
+    jso['timesamples'],
+    jso['polarizations'],
+    DataType_fromObject(jso['datatype'])
+  );
 }
