@@ -4,15 +4,14 @@
 
   let error_message = undefined;
 
-  export let value:object;
-  export let title:string = undefined;
-  let value_json = JSON.stringify(value, null, 2);
+  export let value:string;
+  export let title:string;
 
   function parse() {
     try {
-      value = JSON.parse(value_json)
+      let parsed = JSON.parse(value);
       error_message = undefined;
-      dispatch('parse', value)
+      dispatch('parse', parsed)
     } catch (error:any) {
       error_message = error;
     }
@@ -24,7 +23,7 @@
   {#if title != undefined}
     {title}:
   {/if}
-  <textarea bind:value={value_json} on:input={parse}/>
+  <textarea bind:value={value} on:input={parse}/>
   {#if error_message != undefined}
     <div>
       {error_message}

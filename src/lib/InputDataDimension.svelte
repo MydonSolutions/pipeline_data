@@ -11,12 +11,13 @@
     CI8
   );
 
-  let textarea_datadim_json = datadim;
+  let datadim_json = datadim;
   
   let error_message = undefined;
-  function datadim_parse() {
+  function datadim_parse(event?:CustomEvent) {
     try {
-      datadim = DataDimension_fromObject(textarea_datadim_json);
+      datadim = DataDimension_fromObject(event.detail);
+      datadim_json = event.detail;
       error_message = undefined;
     } catch (error: any) {
       error_message = error;
@@ -25,7 +26,11 @@
 </script>
 
 <main>
-  <InputJson title="Input DataDimension" bind:value={textarea_datadim_json} on:parse={datadim_parse}/>
+  <InputJson
+    title="Input DataDimension"
+    value={JSON.stringify(datadim_json, null, 2)}
+    on:parse={datadim_parse}
+  />
   {#if error_message != undefined}
     <div>
       {error_message}

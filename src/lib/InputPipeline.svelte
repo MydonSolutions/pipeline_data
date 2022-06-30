@@ -6,25 +6,34 @@
 
   export let pipeline:Pipeline; 
   let error_message = undefined;
-  let textarea_pipeline_json = pipeline_1;
-  pipeline_parse();
+  let pipeline_jso:Object;
+
+  function set_pipeline_json(json:Object){
+    pipeline = Pipeline_fromObject(json);
+    pipeline_jso = json;
+  }
   
-  function pipeline_parse() {
+  function pipeline_parse(event?:CustomEvent) {
     try {
-      pipeline = Pipeline_fromObject(textarea_pipeline_json);
+      set_pipeline_json(event.detail);
       error_message = undefined;
     } catch (error: any) {
       error_message = error;
     }
   }
+  set_pipeline_json(pipeline_1);
 </script>
 
 <main>
   <div>
-    <button on:click={()=>{textarea_pipeline_json = pipeline_1;pipeline_parse();}}>#1</button>
-    <button on:click={()=>{textarea_pipeline_json = pipeline_2;pipeline_parse();}}>#2</button>
+    <button on:click={()=>{set_pipeline_json(pipeline_1)}}>#1</button>
+    <button on:click={()=>{set_pipeline_json(pipeline_2)}}>#2</button>
   </div>
-  <InputJson title="Pipeline" bind:value={textarea_pipeline_json} on:parse={pipeline_parse}/>
+  <InputJson 
+    title="Pipeline"
+    value={JSON.stringify(pipeline_jso, null, 2)}
+    on:parse={pipeline_parse}
+  />
   {#if error_message != undefined}
     <div>
       {error_message}
