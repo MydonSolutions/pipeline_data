@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Dataflow } from "../models/dataflow";
+  import Tooltip from "./Tooltip.svelte";
 
   export let dataflows:Dataflow[];
 
@@ -25,21 +26,19 @@
 
 <div class="dataflow">
 
-  <div style="grid-column: 1;">
-  </div>
-  <div style="grid-column: 2;">
+  <div class="header" style="grid-column: 2;">
     Stage
   </div>
-  <div style="grid-column: 3;">
+  <div class="header" style="grid-column: 3;">
     Egress Bytes
   </div>
-  <div style="grid-column: 4;">
+  <div class="header" style="grid-column: 4;">
     (ASPECTS, CHANNELS, TIMESAMPLES, POLARIZATIONS, DATATYPE)
   </div>
-  <div style="grid-column: 5;">
+  <div class="header" style="grid-column: 5;">
     I/O Ratio (Relative)
   </div>
-  <div style="grid-column: 6;">
+  <div class="header" style="grid-column: 6;">
     Throughput
   </div>
 
@@ -51,10 +50,12 @@
       {flow.label}
     </div>
     <div style="grid-column: 3;" class={flow.direction.to}>
-      {byte_string(flow.datadim_out.bytesize())}
-      {#if i > 0}
-        (x{round_decimals(flow.datadim_out.bytesize()/dataflows[i-1].datadim_out.bytesize(), 6)})
-      {/if}
+      <Tooltip tip={flow.direction.to}>
+        {byte_string(flow.datadim_out.bytesize())}
+        {#if i > 0}
+          (x{round_decimals(flow.datadim_out.bytesize()/dataflows[i-1].datadim_out.bytesize(), 6)})
+        {/if}
+      </Tooltip>
     </div>
     <div style="grid-column: 4;">
       ({flow.datadim_out.aspects},
@@ -81,6 +82,10 @@
     display: grid;
     row-gap: 5px;
     margin-bottom: 10px;
+  }
+  div.header {
+    border-bottom: 2px solid white;
+    margin: 3px;
   }
   div.CPU {
     color: coral;
