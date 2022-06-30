@@ -1,0 +1,42 @@
+{
+  "modules": [
+    {
+      "module": "GatherTime",
+      "device": "CPU",
+      "length": 262144
+    },
+    {
+      "module": "LoopChannel",
+      "device": "CPU",
+      "rate": 1
+    },
+    {
+      "module": "Cast",
+      "device": "GPU",
+      "datatype": "CF32"
+    },
+    {
+      "module": "Channelize",
+      "device": "GPU",
+      "rate": 262144
+    },
+    {
+      "module": "LoopChannel",
+      "device": "GPU",
+      "rate": 32
+    },
+    {
+      "module": "Beamform",
+      "device": "GPU",
+      "beams": 8
+    },
+    {
+      "module": "Cast",
+      "device": "GPU",
+      "datatype": "CF16"
+    }
+  ],
+  "label": "Demo",
+  "device": "CPU",
+  "ingestrate": 1
+}

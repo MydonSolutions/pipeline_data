@@ -1,34 +1,13 @@
 <script lang="ts">
-  import {
-    Beamform,
-    Cast,
-    Channelize,
-    GatherTime,
-    LoopChannel,
-  } from "../models/modules";
-  import { CF16, CF32 } from "../models/datatypes";
   import { Pipeline, Pipeline_fromObject } from "../models/pipeline";
   import InputJson from "./InputJSON.svelte";
-  import { Device } from "../models/device";
+  import pipeline_1 from "../assets/pipeline_1.json";
 
-  export let pipeline:Pipeline = new Pipeline(
-    [
-      new GatherTime(Device.CPU, 262144),
-      new LoopChannel(Device.CPU, 1),
-      new Cast(Device.GPU, CF32),
-      new Channelize(Device.GPU, 262144),
-      new LoopChannel(Device.GPU, 32),
-      new Beamform(Device.GPU, 8),
-      new Cast(Device.GPU, CF16),
-    ],
-    "Demo",
-    Device.CPU,
-    1
-  );
-
-  let textarea_pipeline_json = JSON.parse(JSON.stringify(pipeline));
-  
+  export let pipeline:Pipeline; 
+  let textarea_pipeline_json = pipeline_1;
   let error_message = undefined;
+  pipeline_parse();
+  
   function pipeline_parse() {
     try {
       pipeline = Pipeline_fromObject(textarea_pipeline_json);
