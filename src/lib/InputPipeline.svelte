@@ -6,9 +6,16 @@
   export let pipeline:Pipeline; 
   const pipelines:Object[] = _pipelines;
   let error_message = undefined;
+  let pipeline_jso:string;
 
-  function set_pipeline_json(json:Object){
-    pipeline = Pipeline_fromObject(json);
+  function set_pipeline_json(jso:object){
+    // set if json of pipelines differs,
+    //  so that unimpactful changes in the InputJSON
+    //  aren't overridden useless assigns to `pipeline`
+    if(JSON.stringify(jso) != pipeline_jso){
+      pipeline = Pipeline_fromObject(jso);
+      pipeline_jso = JSON.stringify(jso);
+    }
   }
   
   function pipeline_parse(event?:CustomEvent) {
