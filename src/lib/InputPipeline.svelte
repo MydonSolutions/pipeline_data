@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Pipeline, Pipeline_fromObject } from "../models/pipeline";
   import InputJson from "./InputJSON.svelte";
-  import pipeline_1 from "../assets/pipeline_1.json";
-  import pipeline_2 from "../assets/pipeline_2.json";
+  import _pipelines from "../assets/pipelines.json";
 
   export let pipeline:Pipeline; 
+  const pipelines:Object[] = _pipelines;
   let error_message = undefined;
 
   function set_pipeline_json(json:Object){
@@ -19,13 +19,14 @@
       error_message = error;
     }
   }
-  set_pipeline_json(pipeline_1);
+  set_pipeline_json(pipelines[0]);
 </script>
 
 <main>
   <div class="button-tray">
-    <button on:click={()=>{set_pipeline_json(pipeline_1)}}>#1</button>
-    <button on:click={()=>{set_pipeline_json(pipeline_2)}}>#2</button>
+    {#each pipelines as _, i}
+    <button on:click={()=>{set_pipeline_json(pipelines[i])}}>#{i+1}</button>
+    {/each}
   </div>
   <div class="json">
     <InputJson 
