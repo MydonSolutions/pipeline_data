@@ -1,6 +1,7 @@
 import { DataType, DataType_fromObject } from "./datatypes";
 import { Device, getDevice } from "./device";
 import { Dataflow, getDataflowDirection } from "./dataflow";
+import { regex_DataDimension } from "./datadimensions";
 
 export type {
   IModule,
@@ -11,7 +12,7 @@ export {
   Cast, Cast_fromObject,
   Channelize, Channelize_fromObject,
   Detect, Detect_fromObject,
-  GatherTime, GatherTime_fromObject,
+  Gather, Gather_fromObject,
   LoopChannel, LoopChannel_fromObject,
 }
 
@@ -472,15 +473,18 @@ function LoopChannel_fromObject(jso:Object) {
   );
 }
 
-class GatherTime implements IModule{
+class Gather implements IModule{
   device: Device;
+  dimension: string;
   length: number;
 
   constructor(
     device: Device,
+    dimension: string,
     length: number
   ) {
     this.device = device;
+    this.dimension = dimension;
     this.length = length;
   }
 
@@ -488,26 +492,27 @@ class GatherTime implements IModule{
    * toString
    */
   public toString() {
-    return  `GatherTime(${this.length})`;
+    return  `Gather(${this.dimension},${this.length})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `GatherTime(${this.device},${this.length})`
+    return `Gather(${this.device},${this.dimension},${this.length})`
     // return {
-    //   "module": "GatherTime",
+    //   "module": "Gather",
     //   "device": this.device,
+    //   "dimension": this.dimension,
     //   "length": this.length,
     // }
   }
 
   /**
-  * ingest: reduce the number of timesamples
+  * ingest: gather the `length` of `dimension`
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = dataflow.datadim_out.timesamples/this.length;
+    let inout_ratio = dataflow.datadim_out[this.dimension]/this.length;
     let flow = new Dataflow(
       getDataflowDirection(dataflow.direction.to, this.device),
       dataflow.datadim_out.copy(),
@@ -515,34 +520,40 @@ class GatherTime implements IModule{
       this.toString(),
       dataflow.rate*inout_ratio
     );
-    flow.datadim_out.timesamples = this.length;
+    flow.datadim_out[this.dimension] = this.length;
     return flow;
   }
 }
-function GatherTime_fromObject(jso:Object) {
+function Gather_fromObject(jso:Object) {
   // Handle string
   if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/GatherTime\((CPU|GPU),(\d+)\)/);
+    let parsed:string[] = jso.match(/Gather\((CPU|GPU),(\w+),(\d+)\)/);
     if(parsed == null) {
-      throw new Error(`GatherTime parse from 'string' object failed: "${jso}".`);
+      throw new Error(`Gather parse from 'string' object failed: "${jso}".`);
     }
-    return new GatherTime(
+    if(parsed[2].match(regex_DataDimension) == null) {
+      throw new Error(`Gather dimension '${parsed[2]}' does not satisfy regex: ${regex_DataDimension}.`);
+    }
+    return new Gather(
       getDevice(parsed[1]),
-      parseInt(parsed[2])
+      parsed[2],
+      parseInt(parsed[3])
     );
   }
 
   // Handle JSObject
   [
     'device',
+    'dimension',
     'length',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`GatherTime from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`Gather from JSObject: Missing '${prop}' property (${jso}).`);
     }
   });
-  return new GatherTime(
+  return new Gather(
     jso['device'],
+    jso['dimension'],
     jso['length']
   );
 }

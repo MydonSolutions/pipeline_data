@@ -1,8 +1,9 @@
 {
   "modules": [
     {
-      "module": "GatherTime",
+      "module": "Gather",
       "device": "CPU",
+      "dimension": "timesamples",
       "length": 262144
     },
     {

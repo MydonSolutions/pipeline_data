@@ -1,5 +1,7 @@
 import { DataType, DataType_fromObject } from "./datatypes";
-export { DataDimension, DataDimension_fromObject }
+export { DataDimension, DataDimension_fromObject, regex_DataDimension}
+
+const regex_DataDimension = /aspects|channels|timesamples|polarizations|datatype/;
 
 class DataDimension {
   aspects: number;

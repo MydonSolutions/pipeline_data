@@ -1,6 +1,6 @@
 {
   "modules": [
-    "GatherTime(CPU,262144)",
+    "Gather(CPU,timesamples,262144)",
     "Cast(GPU,CF32)",
     "Channelize(GPU,262144)",
     "Beamform(GPU,8)",

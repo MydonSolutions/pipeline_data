@@ -8,7 +8,7 @@ import {
   Cast_fromObject,
   Channelize_fromObject,
   Detect_fromObject,
-  GatherTime_fromObject,
+  Gather_fromObject,
   LoopChannel_fromObject,
 } from "./modules";
 
@@ -139,8 +139,8 @@ function Pipeline_fromObject(jso:Object):Pipeline {
       case 'Detect':
         module_obj = Detect_fromObject(module);
         break;
-      case 'GatherTime':
-        module_obj = GatherTime_fromObject(module);
+      case 'Gather':
+        module_obj = Gather_fromObject(module);
         break;
       case 'LoopChannel':
         module_obj = LoopChannel_fromObject(module);
