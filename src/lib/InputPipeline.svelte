@@ -25,20 +25,22 @@
 </script>
 
 <main>
-  <div>
+  <div class="button-tray">
     <button on:click={()=>{set_pipeline_json(pipeline_1)}}>#1</button>
     <button on:click={()=>{set_pipeline_json(pipeline_2)}}>#2</button>
   </div>
-  <InputJson 
-    title="Pipeline"
-    value={JSON.stringify(pipeline_jso, null, 2)}
-    on:parse={pipeline_parse}
-  />
-  {#if error_message != undefined}
-    <div>
-      {error_message}
-    </div>
-  {/if}
+  <div class="json">
+    <InputJson 
+      title="Pipeline"
+      value={JSON.stringify(pipeline_jso, null, 2)}
+      on:parse={pipeline_parse}
+    />
+    {#if error_message != undefined}
+      <div>
+        {error_message}
+      </div>
+    {/if}
+  </div>
 </main>
 
 <style>
@@ -46,6 +48,16 @@
     width: 100%;
     height: 100%;
     display: flex;
+  }
+  div.json {
+    width: 100%;
+    height: 100%;
+    display: flex;
     flex-direction: column;
+  }
+  div.button-tray {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
   }
 </style>
