@@ -23,13 +23,16 @@ interface IModule {
 
 class Accumulate implements IModule{
   device: Device;
+  dimension: string;
   length: number;
 
   constructor(
     device: Device,
+    dimension: string,
     length: number
   ) {
     this.device = device;
+    this.dimension = dimension;
     this.length = length;
   }
 
@@ -37,17 +40,18 @@ class Accumulate implements IModule{
    * toString
    */
   public toString() {
-    return  `Accumulate(${this.length})`;
+    return  `Accumulate(${this.dimension},${this.length})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Accumulate(${this.device},${this.length})`
+    return `Accumulate(${this.device},${this.dimension},${this.length})`
     // return {
     //   "module": "Accumulate",
     //   "device": this.device,
+    //   "device": this.dimension,
     //   "length": this.length,
     // }
   }
@@ -55,34 +59,40 @@ class Accumulate implements IModule{
   /**
   * ingest: reduce the number of timesamples
   */
-  public ingest(dataflow:Dataflow):Dataflow {    
+  public ingest(dataflow:Dataflow):Dataflow {
+    let inout_ratio = dataflow.datadim_out[this.dimension]/this.length;
     let flow = new Dataflow(
       getDataflowDirection(dataflow.direction.to, this.device),
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.rate
+      dataflow.rate*inout_ratio
     );
-    flow.datadim_out.timesamples /= this.length;
+    flow.datadim_out[this.dimension] = inout_ratio;
     return flow;
   }
 }
 function Accumulate_fromObject(jso:Object) {
   // Handle string
   if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/Accumulate\((CPU|GPU),(\d+)\)/);
+    let parsed:string[] = jso.match(/Accumulate\((CPU|GPU),(\w+),(\d+)\)/);
     if(parsed == null) {
       throw new Error(`Accumulate parse from 'string' object failed: "${jso}".`);
     }
+    if(parsed[2].match(regex_DataDimension) == null) {
+      throw new Error(`Gather dimension '${parsed[2]}' does not satisfy regex: ${regex_DataDimension}.`);
+    }
     return new Accumulate(
       getDevice(parsed[1]),
-      parseInt(parsed[2])
+      parsed[2],
+      parseInt(parsed[3])
     );
   }
 
   // Handle JSObject
   [
     'device',
+    'dimension',
     'length',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
@@ -91,6 +101,7 @@ function Accumulate_fromObject(jso:Object) {
   });
   return new Accumulate(
     jso['device'],
+    jso['dimension'],
     jso['length']
   );
 }
