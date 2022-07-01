@@ -72,6 +72,7 @@ class DataType {
   }
 }
 function DataType_fromObject(jso:Object):DataType {
+  // Handle string
   switch (jso) {
     case 'I8':
       return I8;
@@ -103,6 +104,7 @@ function DataType_fromObject(jso:Object):DataType {
       return CF64;
   }
 
+  // Handle JSObject
   [
     'bytesize',
     'label',

@@ -6,11 +6,9 @@
 
   export let pipeline:Pipeline; 
   let error_message = undefined;
-  let pipeline_jso:Object;
 
   function set_pipeline_json(json:Object){
     pipeline = Pipeline_fromObject(json);
-    pipeline_jso = json;
   }
   
   function pipeline_parse(event?:CustomEvent) {
@@ -32,7 +30,7 @@
   <div class="json">
     <InputJson 
       title="Pipeline"
-      value={JSON.stringify(pipeline_jso, null, 2)}
+      value={JSON.stringify(pipeline, null, 2)}
       on:parse={pipeline_parse}
     />
     {#if error_message != undefined}

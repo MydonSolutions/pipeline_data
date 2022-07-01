@@ -114,32 +114,44 @@ function Pipeline_fromObject(jso:Object):Pipeline {
 
   let modules:IModule[] = [];
   jso['modules'].forEach(module => {
-    switch (module['module']) {
+    let module_obj = null;
+    let identifier = null;
+    if (typeof module == 'string') {
+      identifier = module.split('(')[0];
+    }
+    else {
+      // Assume JSObject, with module string field.
+      identifier = module['module'];
+    }
+    switch (identifier) {
       case 'Accumulate':
-        modules = [...modules, Accumulate_fromObject(module)];
+        module_obj = Accumulate_fromObject(module);
         break;
       case 'Beamform':
-        modules = [...modules, Beamform_fromObject(module)];
+        module_obj = Beamform_fromObject(module);
         break;
       case 'Cast':
-        modules = [...modules, Cast_fromObject(module)];
+        module_obj = Cast_fromObject(module);
         break;
       case 'Channelize':
-        modules = [...modules, Channelize_fromObject(module)];
+        module_obj = Channelize_fromObject(module);
         break;
       case 'Detect':
-        modules = [...modules, Detect_fromObject(module)];
+        module_obj = Detect_fromObject(module);
         break;
       case 'GatherTime':
-        modules = [...modules, GatherTime_fromObject(module)];
+        module_obj = GatherTime_fromObject(module);
         break;
       case 'LoopChannel':
-        modules = [...modules, LoopChannel_fromObject(module)];
+        module_obj = LoopChannel_fromObject(module);
         break;
       default:
-        throw new Error("Unrecognised Module!");
         break;
     }
+    if(module_obj == null) {
+      throw new Error(`Unrecognised Module: ${module}`);
+    }
+    modules = [...modules, module_obj];
   });
   return new Pipeline(modules, jso['label'], jso['device'], jso['ingestrate']);
 }
