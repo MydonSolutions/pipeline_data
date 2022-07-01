@@ -1,32 +1,33 @@
 <script lang="ts">
 	export let tip = '';
-	let isHovered:boolean = false;
+	let show:boolean = false;
 	let x:number;
 	let y:number;
 	
-	function mouseOver(event:MouseEvent) {
-		isHovered = true;
+	function tooltipOpen(event:MouseEvent) {
+		show = true;
 		x = event.pageX + 5;
 		y = event.pageY + 5;
 	}
-	function mouseMove(event:MouseEvent) {
+	function tooltipMove(event:MouseEvent) {
 		x = event.pageX + 5;
 		y = event.pageY + 5;
 	}
-	function mouseLeave() {
-		isHovered = false;
+	function tooltipClose() {
+		show = false;
 	}
 </script>
 
 <div
-	on:mouseover={mouseOver}
+	on:click={tooltipOpen}
 	on:focus={()=>{}}
-  on:mouseleave={mouseLeave}
-	on:mousemove={mouseMove}>
+	on:mousemove={tooltipMove}
+  on:mouseleave={tooltipClose}
+>
 	<slot />
 </div>
 
-{#if isHovered}
+{#if show}
 	<div style="top: {y}px; left: {x}px;" class="tooltip">{tip}</div>
 {/if}
 
