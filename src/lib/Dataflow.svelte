@@ -63,7 +63,7 @@
   {/if}
   <div class="dataflow_stats">
     <div style="grid-column: 1;">
-      Time Invariant
+      Time Invariant Bytes
     </div>
     <div style="grid-column: 2;">
       Throughput

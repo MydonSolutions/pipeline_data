@@ -30,10 +30,12 @@
     Stage
   </div>
   <div class="header" style="grid-column: 3;">
-    Egress Bytes
+    Stage Egress Bytes
   </div>
   <div class="header" style="grid-column: 4;">
-    (ASPECTS, CHANNELS, TIMESAMPLES, POLARIZATIONS, DATATYPE)
+    <Tooltip tip="(ASPECTS, CHANNELS, TIMESAMPLES, POLARIZATIONS, DATATYPE)">
+      Stage Data Dimension
+    </Tooltip>
   </div>
   <div class="header" style="grid-column: 5;">
     I/O Ratio (Relative)

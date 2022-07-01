@@ -35,6 +35,8 @@
 	.tooltip {
 		border: 1px solid #ddd;
 		background: #fff;
+		color: black;
+		font-size: 0.8em;
 		border-radius: 1px;
 		position: absolute;
     text-align: center;
