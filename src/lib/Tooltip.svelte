@@ -1,8 +1,14 @@
 <script lang="ts">
 	export let tip = '';
+	export let style = '';
+	export let tip_style = '';
+	tip = tip.replaceAll('\n', '</br>')
+
 	let show:boolean = false;
 	let x:number;
 	let y:number;
+
+	$: tipstyle = `${tip_style};top: ${y}px;left: ${x}px;`
 	
 	function tooltipOpen(event:MouseEvent) {
 		show = true;
@@ -23,12 +29,13 @@
 	on:focus={()=>{}}
 	on:mousemove={tooltipMove}
   on:mouseleave={tooltipClose}
+	{style}
 >
 	<slot />
 </div>
 
 {#if show}
-	<div style="top: {y}px; left: {x}px;" class="tooltip">{tip}</div>
+	<div style={tipstyle} class="tooltip">{@html tip}</div>
 {/if}
 
 <style>
