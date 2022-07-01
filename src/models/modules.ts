@@ -86,7 +86,7 @@ function Beamform_fromObject(jso:Object) {
     'beams',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`Beamform from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`Beamform from JSObject: Missing '${prop}' property (${JSON.stringify(jso, null, 2)}).`);
     }
   });
   return new Beamform(
@@ -160,7 +160,7 @@ function Cast_fromObject(jso:Object) {
     'datatype',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`Cast from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`Cast from JSObject: Missing '${prop}' property (${JSON.stringify(jso, null, 2)}).`);
     }
   });
   return new Cast(
@@ -241,7 +241,7 @@ function Channelize_fromObject(jso:Object) {
     'rate',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`Channelize from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`Channelize from JSObject: Missing '${prop}' property (${JSON.stringify(jso, null, 2)}).`);
     }
   });
   return new Channelize(
@@ -315,7 +315,7 @@ function Detect_fromObject(jso:Object) {
     'components',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`Detect from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`Detect from JSObject: Missing '${prop}' property (${JSON.stringify(jso, null, 2)}).`);
     }
   });
   return new Detect(
@@ -399,7 +399,7 @@ function Gather_fromObject(jso:Object) {
     'length',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`Gather from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`Gather from JSObject: Missing '${prop}' property (${JSON.stringify(jso, null, 2)}).`);
     }
   });
   return new Gather(
@@ -484,7 +484,7 @@ function Integrate_fromObject(jso:Object) {
     'length',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`Integrate from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`Integrate from JSObject: Missing '${prop}' property (${JSON.stringify(jso, null, 2)}).`);
     }
   });
   return new Integrate(
@@ -569,7 +569,7 @@ function Loop_fromObject(jso:Object) {
     'rate',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`Loop from JSObject: Missing '${prop}' property (${jso}).`);
+      throw new Error(`Loop from JSObject: Missing '${prop}' property (${JSON.stringify(jso, null, 2)}).`);
     }
   });
   return new Loop(
