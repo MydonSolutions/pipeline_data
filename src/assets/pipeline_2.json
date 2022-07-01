@@ -1,4 +1,7 @@
 {
+  "label": "Demo2",
+  "device": "CPU",
+  "ingestrate": 1,
   "modules": [
     "Gather(CPU,timesamples,262144)",
     "Cast(GPU,CF32)",
@@ -7,8 +10,5 @@
     "Cast(GPU,CF16)",
     "Gather(CPU,timesamples,8)",
     "Integrate(CPU,timesamples,4)"
-  ],
-  "label": "Demo2",
-  "device": "CPU",
-  "ingestrate": 1
+  ]
 }

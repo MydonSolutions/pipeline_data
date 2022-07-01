@@ -9,7 +9,7 @@ import {
   Channelize_fromObject,
   Detect_fromObject,
   Gather_fromObject,
-  LoopChannel_fromObject,
+  Loop_fromObject,
 } from "./modules";
 
 export {
@@ -142,8 +142,8 @@ function Pipeline_fromObject(jso:Object):Pipeline {
       case 'Gather':
         module_obj = Gather_fromObject(module);
         break;
-      case 'LoopChannel':
-        module_obj = LoopChannel_fromObject(module);
+      case 'Loop':
+        module_obj = Loop_fromObject(module);
         break;
       default:
         break;

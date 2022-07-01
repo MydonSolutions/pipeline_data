@@ -13,7 +13,7 @@ export {
   Detect, Detect_fromObject,
   Gather, Gather_fromObject,
   Integrate, Integrate_fromObject,
-  LoopChannel, LoopChannel_fromObject,
+  Loop, Loop_fromObject,
 }
 
 interface IModule {
@@ -324,81 +324,6 @@ function Detect_fromObject(jso:Object) {
   );
 }
 
-class LoopChannel implements IModule{
-  device: Device;
-  rate: number;
-
-  constructor(
-    device: Device,
-    rate: number
-  ) {
-    this.device = device;
-    this.rate = rate;
-  }
-
-  /**
-   * toString
-   */
-  public toString() {
-    return  `LoopChannel(${this.rate})`;
-  }
-
-  /**
-   * toJSON
-   */
-  public toJSON() {
-    return `LoopChannel(${this.device},${this.rate})`
-    // return {
-    //   "module": "LoopChannel",
-    //   "device": this.device,
-    //   "rate": this.rate,
-    // }
-  }
-
-  /**
-  * ingest: reduce the number of timesamples
-  */
-  public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = dataflow.datadim_out.channels/this.rate;
-    let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_out.copy(),
-      dataflow.datadim_out.copy(),
-      this.toString(),
-      dataflow.rate*inout_ratio
-    );
-    flow.datadim_out.channels = this.rate;
-    return flow;
-  }
-}
-function LoopChannel_fromObject(jso:Object) {
-  // Handle string
-  if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/LoopChannel\((CPU|GPU),(\d+)\)/);
-    if(parsed == null) {
-      throw new Error(`LoopChannel parse from 'string' object failed: "${jso}".`);
-    }
-    return new LoopChannel(
-      getDevice(parsed[1]),
-      parseInt(parsed[2])
-    );
-  }
-
-  // Handle JSObject
-  [
-    'device',
-    'rate',
-  ].forEach(prop => {
-    if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`LoopChannel from JSObject: Missing '${prop}' property (${jso}).`);
-    }
-  });
-  return new LoopChannel(
-    jso['device'],
-    jso['rate']
-  );
-}
-
 class Gather implements IModule{
   device: Device;
   dimension: string;
@@ -566,5 +491,90 @@ function Integrate_fromObject(jso:Object) {
     jso['device'],
     jso['dimension'],
     jso['length']
+  );
+}
+
+class Loop implements IModule{
+  device: Device;
+  dimension: string;
+  rate: number;
+
+  constructor(
+    device: Device,
+    dimension: string,
+    rate: number
+  ) {
+    this.device = device;
+    this.dimension = dimension;
+    this.rate = rate;
+  }
+
+  /**
+   * toString
+   */
+  public toString() {
+    return  `Loop(${this.dimension},${this.rate})`;
+  }
+
+  /**
+   * toJSON
+   */
+  public toJSON() {
+    return `Loop(${this.device},${this.dimension},${this.rate})`
+    // return {
+    //   "module": "Loop",
+    //   "device": this.device,
+    //   "dimension": this.dimension,
+    //   "rate": this.rate,
+    // }
+  }
+
+  /**
+  * ingest: reduce the number of timesamples
+  */
+  public ingest(dataflow:Dataflow):Dataflow {    
+    let inout_ratio = dataflow.datadim_out.channels/this.rate;
+    let flow = new Dataflow(
+      getDataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadim_out.copy(),
+      dataflow.datadim_out.copy(),
+      this.toString(),
+      dataflow.rate*inout_ratio
+    );
+    flow.datadim_out.channels = this.rate;
+    return flow;
+  }
+}
+function Loop_fromObject(jso:Object) {
+  // Handle string
+  if(typeof jso == 'string') {
+    let parsed:string[] = jso.match(/Loop\((CPU|GPU),(\w+),(\d+)\)/);
+    if(parsed == null) {
+      throw new Error(`Loop parse from 'string' object failed: "${jso}".`);
+    }
+    if(parsed[2].match(regex_DataDimension) == null) {
+      throw new Error(`Gather dimension '${parsed[2]}' does not satisfy regex: ${regex_DataDimension}.`);
+    }
+    return new Loop(
+      getDevice(parsed[1]),
+      parsed[2],
+      parseInt(parsed[3])
+    );
+  }
+
+  // Handle JSObject
+  [
+    'device',
+    'dimension',
+    'rate',
+  ].forEach(prop => {
+    if(!jso.hasOwnProperty(prop)) {
+      throw new Error(`Loop from JSObject: Missing '${prop}' property (${jso}).`);
+    }
+  });
+  return new Loop(
+    jso['device'],
+    jso['dimension'],
+    jso['rate']
   );
 }
