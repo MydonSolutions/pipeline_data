@@ -1,4 +1,4 @@
-import { DataType, DataType_fromObject } from "./datatypes";
+import { CI8, DataType, DataType_fromObject } from "./datatypes";
 import { Device, getDevice } from "./device";
 import { Dataflow, getDataflowDirection } from "./dataflow";
 import { regex_DataDimension } from "./datadimensions";
@@ -14,6 +14,7 @@ export {
   Gather, Gather_fromObject,
   Integrate, Integrate_fromObject,
   Loop, Loop_fromObject,
+  module_examples
 }
 
 interface IModule {
@@ -578,3 +579,13 @@ function Loop_fromObject(jso:Object) {
     jso['rate']
   );
 }
+
+const module_examples:IModule[] = [
+  new Beamform(Device.GPU, 4),
+  new Cast(Device.CPU, CI8),
+  new Channelize(Device.CPU, 4),
+  new Detect(Device.CPU, 4),
+  new Gather(Device.CPU, "dimension", 4),
+  new Integrate(Device.CPU, "dimension", 4),
+  new Loop(Device.CPU, "dimension", 4),
+];

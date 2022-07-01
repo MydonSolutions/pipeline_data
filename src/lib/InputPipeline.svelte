@@ -2,6 +2,8 @@
   import { Pipeline, Pipeline_fromObject } from "../models/pipeline";
   import InputJson from "./InputJSON.svelte";
   import _pipelines from "../assets/pipelines.json";
+  import Tooltip from "./Tooltip.svelte";
+  import { module_examples } from "../models/modules";
 
   export let pipeline:Pipeline; 
   let pipelines:Object[] = _pipelines;
@@ -33,10 +35,17 @@
 </script>
 
 <main>
-  <div class="button-tray">
-    {#each pipelines as pipeline, i}
-    <button on:click={()=>{set_pipeline_json(pipelines[i])}}>{pipeline['label']}</button>
-    {/each}
+  <div class="sidebar">
+    <Tooltip
+      tip={"Examples:" + JSON.stringify(module_examples, null, 2)}
+    >
+      ?
+    </Tooltip>
+    <div class="button-tray">
+      {#each pipelines as pipeline, i}
+      <button on:click={()=>{set_pipeline_json(pipelines[i])}}>{pipeline['label']}</button>
+      {/each}
+    </div>
     <button on:click={()=>{pipelines = [...pipelines, cache_jso];}}>+</button>
   </div>
   <div class="json">
@@ -65,9 +74,15 @@
     display: flex;
     flex-direction: column;
   }
-  div.button-tray {
+  div.sidebar {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+  }
+  div.button-tray {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 </style>
