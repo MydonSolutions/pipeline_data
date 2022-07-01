@@ -4,17 +4,20 @@
   import _pipelines from "../assets/pipelines.json";
 
   export let pipeline:Pipeline; 
-  const pipelines:Object[] = _pipelines;
+  let pipelines:Object[] = _pipelines;
   let error_message = undefined;
-  let pipeline_jso:string;
+  let cache_jso:Object;
+  let cache_json:string;
 
   function set_pipeline_json(jso:object){
     // set if json of pipelines differs,
     //  so that unimpactful changes in the InputJSON
     //  aren't overridden useless assigns to `pipeline`
-    if(JSON.stringify(jso) != pipeline_jso){
+    let json = JSON.stringify(jso);
+    if(json != cache_json){
       pipeline = Pipeline_fromObject(jso);
-      pipeline_jso = JSON.stringify(jso);
+      cache_jso = jso;
+      cache_json = json;
     }
   }
   
@@ -31,9 +34,10 @@
 
 <main>
   <div class="button-tray">
-    {#each pipelines as _, i}
-    <button on:click={()=>{set_pipeline_json(pipelines[i])}}>#{i+1}</button>
+    {#each pipelines as pipeline, i}
+    <button on:click={()=>{set_pipeline_json(pipelines[i])}}>{pipeline['label']}</button>
     {/each}
+    <button on:click={()=>{pipelines = [...pipelines, cache_jso];}}>+</button>
   </div>
   <div class="json">
     <InputJson 
