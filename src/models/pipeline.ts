@@ -3,7 +3,7 @@ import { Dataflow, getDataflowDirection } from "./dataflow";
 import type { Device } from "./device";
 import {
   IModule,
-  Accumulate_fromObject,
+  Integrate_fromObject,
   Beamform_fromObject,
   Cast_fromObject,
   Channelize_fromObject,
@@ -124,8 +124,8 @@ function Pipeline_fromObject(jso:Object):Pipeline {
       identifier = module['module'];
     }
     switch (identifier) {
-      case 'Accumulate':
-        module_obj = Accumulate_fromObject(module);
+      case 'Integrate':
+        module_obj = Integrate_fromObject(module);
         break;
       case 'Beamform':
         module_obj = Beamform_fromObject(module);

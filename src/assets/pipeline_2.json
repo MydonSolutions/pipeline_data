@@ -6,7 +6,7 @@
     "Beamform(GPU,8)",
     "Cast(GPU,CF16)",
     "Gather(CPU,timesamples,8)",
-    "Accumulate(CPU,timesamples,4)"
+    "Integrate(CPU,timesamples,4)"
   ],
   "label": "Demo2",
   "device": "CPU",

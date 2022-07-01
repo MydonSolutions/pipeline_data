@@ -7,103 +7,18 @@ export type {
   IModule,
 }
 export {
-  Accumulate, Accumulate_fromObject,
   Beamform, Beamform_fromObject,
   Cast, Cast_fromObject,
   Channelize, Channelize_fromObject,
   Detect, Detect_fromObject,
   Gather, Gather_fromObject,
+  Integrate, Integrate_fromObject,
   LoopChannel, LoopChannel_fromObject,
 }
 
 interface IModule {
   device: Device;
   ingest(dataflow:Dataflow):Dataflow;
-}
-
-class Accumulate implements IModule{
-  device: Device;
-  dimension: string;
-  length: number;
-
-  constructor(
-    device: Device,
-    dimension: string,
-    length: number
-  ) {
-    this.device = device;
-    this.dimension = dimension;
-    this.length = length;
-  }
-
-  /**
-   * toString
-   */
-  public toString() {
-    return  `Accumulate(${this.dimension},${this.length})`;
-  }
-
-  /**
-   * toJSON
-   */
-  public toJSON() {
-    return `Accumulate(${this.device},${this.dimension},${this.length})`
-    // return {
-    //   "module": "Accumulate",
-    //   "device": this.device,
-    //   "device": this.dimension,
-    //   "length": this.length,
-    // }
-  }
-
-  /**
-  * ingest: reduce the number of timesamples
-  */
-  public ingest(dataflow:Dataflow):Dataflow {
-    let inout_ratio = dataflow.datadim_out[this.dimension]/this.length;
-    let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_in.copy(),
-      dataflow.datadim_out.copy(),
-      this.toString(),
-      dataflow.rate*inout_ratio
-    );
-    flow.datadim_out[this.dimension] = inout_ratio;
-    return flow;
-  }
-}
-function Accumulate_fromObject(jso:Object) {
-  // Handle string
-  if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/Accumulate\((CPU|GPU),(\w+),(\d+)\)/);
-    if(parsed == null) {
-      throw new Error(`Accumulate parse from 'string' object failed: "${jso}".`);
-    }
-    if(parsed[2].match(regex_DataDimension) == null) {
-      throw new Error(`Gather dimension '${parsed[2]}' does not satisfy regex: ${regex_DataDimension}.`);
-    }
-    return new Accumulate(
-      getDevice(parsed[1]),
-      parsed[2],
-      parseInt(parsed[3])
-    );
-  }
-
-  // Handle JSObject
-  [
-    'device',
-    'dimension',
-    'length',
-  ].forEach(prop => {
-    if(!jso.hasOwnProperty(prop)) {
-      throw new Error(`Accumulate from JSObject: Missing '${prop}' property (${jso}).`);
-    }
-  });
-  return new Accumulate(
-    jso['device'],
-    jso['dimension'],
-    jso['length']
-  );
 }
 
 class Beamform implements IModule{
@@ -563,6 +478,91 @@ function Gather_fromObject(jso:Object) {
     }
   });
   return new Gather(
+    jso['device'],
+    jso['dimension'],
+    jso['length']
+  );
+}
+
+class Integrate implements IModule{
+  device: Device;
+  dimension: string;
+  length: number;
+
+  constructor(
+    device: Device,
+    dimension: string,
+    length: number
+  ) {
+    this.device = device;
+    this.dimension = dimension;
+    this.length = length;
+  }
+
+  /**
+   * toString
+   */
+  public toString() {
+    return  `Integrate(${this.dimension},${this.length})`;
+  }
+
+  /**
+   * toJSON
+   */
+  public toJSON() {
+    return `Integrate(${this.device},${this.dimension},${this.length})`
+    // return {
+    //   "module": "Integrate",
+    //   "device": this.device,
+    //   "device": this.dimension,
+    //   "length": this.length,
+    // }
+  }
+
+  /**
+  * ingest: reduce the number of timesamples
+  */
+  public ingest(dataflow:Dataflow):Dataflow {
+    let inout_ratio = dataflow.datadim_out[this.dimension]/this.length;
+    let flow = new Dataflow(
+      getDataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadim_in.copy(),
+      dataflow.datadim_out.copy(),
+      this.toString(),
+      dataflow.rate*inout_ratio
+    );
+    flow.datadim_out[this.dimension] = inout_ratio;
+    return flow;
+  }
+}
+function Integrate_fromObject(jso:Object) {
+  // Handle string
+  if(typeof jso == 'string') {
+    let parsed:string[] = jso.match(/Integrate\((CPU|GPU),(\w+),(\d+)\)/);
+    if(parsed == null) {
+      throw new Error(`Integrate parse from 'string' object failed: "${jso}".`);
+    }
+    if(parsed[2].match(regex_DataDimension) == null) {
+      throw new Error(`Gather dimension '${parsed[2]}' does not satisfy regex: ${regex_DataDimension}.`);
+    }
+    return new Integrate(
+      getDevice(parsed[1]),
+      parsed[2],
+      parseInt(parsed[3])
+    );
+  }
+
+  // Handle JSObject
+  [
+    'device',
+    'dimension',
+    'length',
+  ].forEach(prop => {
+    if(!jso.hasOwnProperty(prop)) {
+      throw new Error(`Integrate from JSObject: Missing '${prop}' property (${jso}).`);
+    }
+  });
+  return new Integrate(
     jso['device'],
     jso['dimension'],
     jso['length']
