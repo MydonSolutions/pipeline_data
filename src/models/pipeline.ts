@@ -17,10 +17,10 @@ export {
 }
 
 class Pipeline {
-  modules: IModule[];
   label: string;
   device: Device;
   ingestrate: number;
+  modules: IModule[];
   error: Error;
 
   constructor(
