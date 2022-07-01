@@ -73,35 +73,38 @@ class DataType {
 }
 function DataType_fromObject(jso:Object):DataType {
   // Handle string
-  switch (jso) {
-    case 'I8':
-      return I8;
-    case 'CI8':
-      return CI8;
-    case 'I16':
-      return I16;
-    case 'CI16':
-      return CI16;
-    case 'I32':
-      return I32;
-    case 'CI32':
-      return CI32;
-    case 'I64':
-      return I64;
-    case 'CI64':
-      return CI64;
-    case 'F16':
-      return F16;
-    case 'CF16':
-      return CF16;
-    case 'F32':
-      return F32;
-    case 'CF32':
-      return CF32;
-    case 'F64':
-      return F64;
-    case 'CF64':
-      return CF64;
+  if(typeof jso == 'string'){
+    switch (jso) {
+      case 'I8':
+        return I8;
+      case 'CI8':
+        return CI8;
+      case 'I16':
+        return I16;
+      case 'CI16':
+        return CI16;
+      case 'I32':
+        return I32;
+      case 'CI32':
+        return CI32;
+      case 'I64':
+        return I64;
+      case 'CI64':
+        return CI64;
+      case 'F16':
+        return F16;
+      case 'CF16':
+        return CF16;
+      case 'F32':
+        return F32;
+      case 'CF32':
+        return CF32;
+      case 'F64':
+        return F64;
+      case 'CF64':
+        return CF64;
+    }
+    throw new Error(`DataType parse from string failed: ${jso} not predefined.`);
   }
 
   // Handle JSObject
