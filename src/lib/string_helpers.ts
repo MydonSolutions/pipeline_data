@@ -24,9 +24,9 @@ function byte_string(bytes:number):string {
 
 function ratio_string(ratio:number):string {
   if(ratio < 1) {
-    return `${1/ratio}:1`;
+    return `${round_decimals(1/ratio, 4)}:1`;
   }
   else {
-    return `1:${ratio}`;
+    return `1:${round_decimals(ratio, 4)}`;
   }
 }
