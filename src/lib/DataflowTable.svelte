@@ -50,11 +50,19 @@
       </Tooltip>
     </div>
     <div style="grid-column: 4;">
-      ({flow.datadims.out.aspects},
-        {flow.datadims.out.channels},
-        {flow.datadims.out.timesamples},
-        {flow.datadims.out.polarizations},
-        {flow.datadims.out.datatype.label})
+      <Tooltip
+        tip={`(${flow.datadims.out.aspects.expression},
+        ${flow.datadims.out.channels.expression},
+        ${flow.datadims.out.timesamples.expression},
+        ${flow.datadims.out.polarizations.expression},
+        ${flow.datadims.out.datatype.label})`}
+      >
+        ({flow.datadims.out.aspects},
+          {flow.datadims.out.channels},
+          {flow.datadims.out.timesamples},
+          {flow.datadims.out.polarizations},
+          {flow.datadims.out.datatype.label})
+      </Tooltip>
     </div>
     <div style="grid-column: 5;">
       {ratio_string(flow.rates.out)}
