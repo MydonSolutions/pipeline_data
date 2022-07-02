@@ -1,7 +1,7 @@
 import { CI8, DataType, DataType_fromObject } from "./datatypes";
 import { Device, getDevice } from "./device";
-import { Dataflow, getDataflowDirection } from "./dataflow";
-import { regex_DataDimension } from "./datadimensions";
+import { Dataflow, DataflowID, getDataflowDirection, IOPair } from "./dataflow";
+import { DataDimension, regex_DataDimension } from "./datadimensions";
 
 export type {
   IModule,
@@ -59,14 +59,20 @@ class Beamform implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_in.copy(),
-      dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().increment(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out,
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate
     );
-    flow.datadim_out.aspects = this.beams;
+    flow.ids.out.increment();
+    flow.datadims.out.aspects = this.beams;
     return flow;
   }
 }
@@ -130,18 +136,24 @@ class Cast implements IModule{
   }
 
   /**
-  * ingest: change the datadim_in.datatype
+  * ingest: change the datadims.in.datatype
   */
   public ingest(dataflow:Dataflow):Dataflow {
     let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_in.copy(),
-      dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().increment(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out,
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate
     );
-    flow.datadim_out.datatype = this.datatype;
+    flow.ids.out.increment();
+    flow.datadims.out.datatype = this.datatype;
     return flow;
   }
 }
@@ -208,22 +220,28 @@ class Channelize implements IModule{
   * ingest: upchannelize by a given rate
   */
   public ingest(dataflow:Dataflow):Dataflow {
-    if(dataflow.datadim_in.timesamples % this.rate != 0) {
+    if(dataflow.datadims.in.timesamples % this.rate != 0) {
       throw new Error(
-        `Channelizer rate (${this.rate}) not a factor of timesamples (${dataflow.datadim_in.timesamples}).`
+        `Channelizer rate (${this.rate}) not a factor of timesamples (${dataflow.datadims.in.timesamples}).`
       );
     }
     
     let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_in.copy(),
-      dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().increment(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out,
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate
     );
-    flow.datadim_out.timesamples /= this.rate;
-    flow.datadim_out.channels *= this.rate;
+    flow.ids.out.increment();
+    flow.datadims.out.timesamples /= this.rate;
+    flow.datadims.out.channels *= this.rate;
     return flow;
   }
 }
@@ -291,14 +309,20 @@ class Detect implements IModule{
   */
   public ingest(dataflow:Dataflow):Dataflow {    
     let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_in.copy(),
-      dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().increment(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out,
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate
     );
-    flow.datadim_out.polarizations = this.components;
+    flow.ids.out.increment();
+    flow.datadims.out.polarizations = this.components;
     return flow;
   }
 }
@@ -369,16 +393,22 @@ class Gather implements IModule{
   * ingest: gather the `length` of `dimension`
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = dataflow.datadim_out[this.dimension]/this.length;
+    let inout_ratio = dataflow.datadims.out[this.dimension]/this.length;
     let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_out.copy(),
-      dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().increment(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out,
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate*inout_ratio
     );
-    flow.datadim_out[this.dimension] = this.length;
+    flow.ids.out.increment();
+    flow.datadims.out[this.dimension] = this.length;
     return flow;
   }
 }
@@ -455,16 +485,22 @@ class Integrate implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {
-    let inout_ratio = dataflow.datadim_out[this.dimension]/this.length;
+    let inout_ratio = dataflow.datadims.out[this.dimension]/this.length;
     let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_in.copy(),
-      dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().increment(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out,
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate*inout_ratio
     );
-    flow.datadim_out[this.dimension] = inout_ratio;
+    flow.ids.out.increment();
+    flow.datadims.out[this.dimension] = inout_ratio;
     return flow;
   }
 }
@@ -551,20 +587,26 @@ class Loop implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    if(dataflow.datadim_out[this.dimension] % this.rate != 0) {
-      throw new Error(`Loop rate ${this.rate} is not a factor of input '${this.dimension}': ${dataflow.datadim_out[this.dimension]}.`);
+    if(dataflow.datadims.out[this.dimension] % this.rate != 0) {
+      throw new Error(`Loop rate ${this.rate} is not a factor of input '${this.dimension}': ${dataflow.datadims.out[this.dimension]}.`);
     }
 
-    let inout_ratio = dataflow.datadim_out[this.dimension]/this.rate;
+    let inout_ratio = dataflow.datadims.out[this.dimension]/this.rate;
     let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_out.copy(),
-      dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().increment().push(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out,
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate*inout_ratio
     );
-    flow.datadim_out[this.dimension] = this.rate;
+    flow.ids.out.push();
+    flow.datadims.out[this.dimension] = this.rate;
 
     if(this._pool != null) {
       this._pool.inverse_rate = inout_ratio;
@@ -642,16 +684,22 @@ class Pool implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = this.inverse_rate/dataflow.datadim_out[this.dimension];
+    let inout_ratio = this.inverse_rate/dataflow.datadims.out[this.dimension];
     let flow = new Dataflow(
-      getDataflowDirection(dataflow.direction.to, this.device),
-      dataflow.datadim_out.copy(),
-      dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().pop().increment(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out.pop(),
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate/inout_ratio
     );
-    flow.datadim_out[this.dimension] *= this.inverse_rate;
+    flow.ids.out.increment();
+    flow.datadims.out[this.dimension] *= this.inverse_rate;
     return flow;
   }
 }

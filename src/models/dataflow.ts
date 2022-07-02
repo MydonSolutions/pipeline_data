@@ -2,39 +2,44 @@ import type { DataDimension } from "./datadimensions";
 import { Device } from "./device";
 
 export {
+  IOPair,
   DataflowID,
   Dataflow,
   getDataflowDirection
 }
-export type {
-  DataflowDirection
-}
 
-class DataflowDirection {
-  from: Device
-  to: Device
-
+class IOPair<T> {
+  in: T
+  out: T
   constructor (
-    from: Device,
-    to: Device,
+    input: T,
+    output: T
   ) {
-    this.from = from;
-    this.to = to;
+    this.in = input;
+    this.out = output;
   }
-
+  
   /**
    * toString
    */
-  public toString() {
-    return `${this.from}->${this.to}`;
+   public toString() {
+    return `${this.in}->${this.out}`;
+  }
+
+  /**
+   * copy
+   */
+  public copy() {
+    return new IOPair<T>(this.in, this.out);
   }
 }
 
+
 const DataflowDirections = {
-  RAM: new DataflowDirection(Device.CPU, Device.CPU),
-  VRAM: new DataflowDirection(Device.GPU, Device.GPU),
-  PCI_H2D: new DataflowDirection(Device.CPU, Device.GPU),
-  PCI_D2H: new DataflowDirection(Device.GPU, Device.CPU),
+  RAM: new IOPair<Device>(Device.CPU, Device.CPU),
+  VRAM: new IOPair<Device>(Device.GPU, Device.GPU),
+  PCI_H2D: new IOPair<Device>(Device.CPU, Device.GPU),
+  PCI_D2H: new IOPair<Device>(Device.GPU, Device.CPU),
 }
 
 function getDataflowDirection(from:Device, to:Device) {
@@ -111,26 +116,23 @@ class DataflowID {
 }
 
 class Dataflow {
-  direction: DataflowDirection
-  datadim_in: DataDimension
-  datadim_out: DataDimension
   label: string
-  id: DataflowID
+  devices: IOPair<Device>
+  datadims: IOPair<DataDimension>
+  ids: IOPair<DataflowID>
   rate: number
 
   constructor(
-    direction: DataflowDirection,
-    datadim_in: DataDimension,
-    datadim_out: DataDimension,
     label: string,
-    id: DataflowID,
+    devices: IOPair<Device>,
+    datadims: IOPair<DataDimension>,
+    ids: IOPair<DataflowID>,
     rate: number,
   ) {
-    this.direction = direction;
-    this.datadim_in = datadim_in;
-    this.datadim_out = datadim_out;
     this.label = label;
-    this.id = id;
+    this.devices = devices;
+    this.datadims = datadims;
+    this.ids = ids;
     this.rate = rate;
   }
 
@@ -139,11 +141,10 @@ class Dataflow {
    */
   public copy() {
     return new Dataflow(
-      this.direction,
-      this.datadim_in.copy(),
-      this.datadim_out.copy(),
       this.label,
-      this.id.copy(),
+      this.devices.copy(),
+      this.datadims.copy(),
+      this.ids.copy(),
       this.rate,
     );
   }

@@ -46,25 +46,32 @@
 
   {#each dataflows as flow, i}
     <div style="grid-column: 1; text-align: end; padding-right: 0.5em; border-right: 1px solid #ffffff22">
-      #{flow.id.toString()}:
+      {#if flow.label.startsWith('Loop')}
+        +
+      {:else if flow.label.startsWith('Pool')}
+        -
+      {:else}
+        #
+      {/if}
+      {flow.ids.in.toString()}:
     </div>
-    <div style="grid-column: 2; text-align: start; padding-left: {0.25 + 0.75*(flow.id.length()-1)}em;">
+    <div style="grid-column: 2; text-align: start; padding-left: {0.25 + 0.75*(flow.ids.in.length()-1)}em;">
       {flow.label}
     </div>
-    <div style="grid-column: 3;" class={flow.direction.to}>
-      <Tooltip tip={flow.direction.to}>
-        {byte_string(flow.datadim_out.bytesize())}
+    <div style="grid-column: 3;" class={flow.devices.out}>
+      <Tooltip tip={flow.devices.out}>
+        {byte_string(flow.datadims.out.bytesize())}
         {#if i > 0}
-          (x{round_decimals(flow.datadim_out.bytesize()/dataflows[i-1].datadim_out.bytesize(), 6)})
+          (x{round_decimals(flow.datadims.out.bytesize()/dataflows[i-1].datadims.out.bytesize(), 6)})
         {/if}
       </Tooltip>
     </div>
     <div style="grid-column: 4;">
-      ({flow.datadim_out.aspects},
-        {flow.datadim_out.channels},
-        {flow.datadim_out.timesamples},
-        {flow.datadim_out.polarizations},
-        {flow.datadim_out.datatype.label})
+      ({flow.datadims.out.aspects},
+        {flow.datadims.out.channels},
+        {flow.datadims.out.timesamples},
+        {flow.datadims.out.polarizations},
+        {flow.datadims.out.datatype.label})
     </div>
     <div style="grid-column: 5;">
       @ {flow.rate}
@@ -73,7 +80,7 @@
       {/if}
     </div>
     <div style="grid-column: 6;">
-      {byte_string(flow.rate*flow.datadim_out.bytesize())}
+      {byte_string(flow.rate*flow.datadims.in.bytesize())}
     </div>
   {/each}
 </div>

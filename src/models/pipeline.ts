@@ -1,6 +1,6 @@
 import type { DataDimension } from "./datadimensions";
-import { Dataflow, DataflowID, getDataflowDirection } from "./dataflow";
 import type { Device } from "./device";
+import { IOPair, Dataflow, DataflowID, getDataflowDirection } from "./dataflow";
 import {
   IModule,
   Integrate_fromObject,
@@ -10,7 +10,6 @@ import {
   Detect_fromObject,
   Gather_fromObject,
   Loop_fromObject,
-  Pool,
 } from "./modules";
 
 export {
@@ -41,14 +40,21 @@ class Pipeline {
    * transfer
    */
   private transfer(to:Device, dataflow:Dataflow):Dataflow {
-    return new Dataflow(
-      getDataflowDirection(dataflow.direction.to, to),
-      dataflow.datadim_out.copy(),
-      dataflow.datadim_out.copy(),
-      `Transfer(${dataflow.direction.to}->${to})`,
-      dataflow.id.copy().increment(),
+    let flow = new Dataflow(
+      `Transfer(${dataflow.devices.out}->${to})`,
+      getDataflowDirection(dataflow.devices.out, to),
+      new IOPair<DataDimension>(
+        dataflow.datadims.out,
+        dataflow.datadims.out.copy(),
+      ),
+      new IOPair<DataflowID>(
+        dataflow.ids.out,
+        dataflow.ids.out.copy(),
+      ),
       dataflow.rate
     );
+    flow.ids.out.increment();
+    return flow;
   }
 
   /**
@@ -60,24 +66,29 @@ class Pipeline {
     this.error = undefined;
 
     let dataflow = new Dataflow(
-      getDataflowDirection(this.device, this.device),
-      undefined,
-      datadim,
       "Input",
-      new DataflowID([0]),
+      getDataflowDirection(this.device, this.device),
+      new IOPair<DataDimension>(
+        datadim,
+        datadim
+      ),
+      new IOPair<DataflowID>(
+        new DataflowID([0]),
+        new DataflowID([1]),
+      ),
       this.ingestrate
     );
     let dataflows:Dataflow[] = [dataflow];
     
     try {
       this.modules.forEach(module => {
-        if(module.device != dataflow.direction.to) {
+        if(module.device != dataflow.devices.out) {
           dataflow = this.transfer(module.device, dataflow);
           dataflows = [
             ...dataflows,
             dataflow.copy()
           ];
-          dataflow.direction.to = module.device;
+          dataflow.devices.out = module.device;
         }
   
         dataflow = module.ingest(dataflow);
@@ -92,7 +103,7 @@ class Pipeline {
       this.error = error;
     }
     
-    if(this.device != dataflow.direction.to) {
+    if(this.device != dataflow.devices.out) {
       dataflow = this.transfer(this.device, dataflow);
       dataflows = [
         ...dataflows,
