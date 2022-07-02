@@ -25,7 +25,7 @@
 </script>
 
 <div
-	on:click={tooltipOpen}
+	on:mouseenter={tooltipOpen}
 	on:focus={()=>{}}
 	on:mousemove={tooltipMove}
   on:mouseleave={tooltipClose}
