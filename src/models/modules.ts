@@ -644,14 +644,13 @@ class Pool implements IModule{
   /**
   * ingest: reduce the number of timesamples
   */
-  public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = this.inverse_rate/dataflow.datadims.out[this.dimension];
+  public ingest(dataflow:Dataflow):Dataflow {
     let flow = DataflowInOut(
       this.toString(),
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out.pop(),
-      dataflow.rates.out/inout_ratio
+      dataflow.rates.out/this.inverse_rate
     );
     flow.ids.out.increment();
     flow.datadims.out[this.dimension] *= this.inverse_rate;
