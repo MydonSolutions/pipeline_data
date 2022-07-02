@@ -1,6 +1,6 @@
 import type { DataDimension } from "./datadimensions";
 import type { Device } from "./device";
-import { IOPair, Dataflow, DataflowID, getDataflowDirection } from "./dataflow";
+import { IOPair, Dataflow, DataflowID, getDataflowDirection, DataflowInOut } from "./dataflow";
 import {
   IModule,
   Integrate_fromObject,
@@ -40,17 +40,11 @@ class Pipeline {
    * transfer
    */
   private transfer(to:Device, dataflow:Dataflow):Dataflow {
-    let flow = new Dataflow(
+    let flow = DataflowInOut(
       `Transfer(${dataflow.devices.out}->${to})`,
       getDataflowDirection(dataflow.devices.out, to),
-      new IOPair<DataDimension>(
-        dataflow.datadims.out,
-        dataflow.datadims.out.copy(),
-      ),
-      new IOPair<DataflowID>(
-        dataflow.ids.out,
-        dataflow.ids.out.copy(),
-      ),
+      dataflow.datadims.out,
+      dataflow.ids.out,
       dataflow.rate
     );
     flow.ids.out.increment();

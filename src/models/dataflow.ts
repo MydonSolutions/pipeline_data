@@ -3,9 +3,10 @@ import { Device } from "./device";
 
 export {
   IOPair,
-  DataflowID,
   Dataflow,
-  getDataflowDirection
+  DataflowInOut,
+  DataflowID,
+  getDataflowDirection,
 }
 
 class IOPair<T> {
@@ -148,4 +149,27 @@ class Dataflow {
       this.rate,
     );
   }
+}
+
+// Supporting constructor for module ingest
+function DataflowInOut(
+  label: string,
+  devices: IOPair<Device>,
+  datadim: DataDimension,
+  id: DataflowID,
+  rate: number,
+):Dataflow {
+  return new Dataflow(
+    label,
+    devices,
+    new IOPair<DataDimension>(
+      datadim,
+      datadim.copy(),
+    ),
+    new IOPair<DataflowID>(
+      id,
+      id.copy(),
+    ),
+    rate
+  );
 }
