@@ -65,6 +65,13 @@ class DataflowID {
   }
 
   /**
+   * length
+   */
+  public length():number {
+    return this.parts.length;
+  }
+
+  /**
    * toString
    */
   public toString():string {

@@ -45,10 +45,10 @@
   </div>
 
   {#each dataflows as flow, i}
-    <div style="grid-column: 1;">
+    <div style="grid-column: 1; text-align: end; padding-right: 0.5em; border-right: 1px solid #ffffff22">
       #{flow.id.toString()}:
     </div>
-    <div style="grid-column: 2;">
+    <div style="grid-column: 2; text-align: start; padding-left: {0.25 + 0.75*(flow.id.length()-1)}em;">
       {flow.label}
     </div>
     <div style="grid-column: 3;" class={flow.direction.to}>
