@@ -534,7 +534,7 @@ class Loop implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = dataflow.datadim_out.channels/this.rate;
+    let inout_ratio = dataflow.datadim_out[this.dimension]/this.rate;
     let flow = new Dataflow(
       getDataflowDirection(dataflow.direction.to, this.device),
       dataflow.datadim_out.copy(),
@@ -542,7 +542,7 @@ class Loop implements IModule{
       this.toString(),
       dataflow.rate*inout_ratio
     );
-    flow.datadim_out.channels = this.rate;
+    flow.datadim_out[this.dimension] = this.rate;
     return flow;
   }
 }
@@ -554,7 +554,7 @@ function Loop_fromObject(jso:Object) {
       throw new Error(`Loop parse from 'string' object failed: "${jso}".`);
     }
     if(parsed[2].match(regex_DataDimension) == null) {
-      throw new Error(`Gather dimension '${parsed[2]}' does not satisfy regex: ${regex_DataDimension}.`);
+      throw new Error(`Loop dimension '${parsed[2]}' does not satisfy regex: ${regex_DataDimension}.`);
     }
     return new Loop(
       getDevice(parsed[1]),
