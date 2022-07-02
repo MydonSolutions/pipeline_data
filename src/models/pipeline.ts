@@ -1,5 +1,5 @@
 import type { DataDimension } from "./datadimensions";
-import { Dataflow, getDataflowDirection } from "./dataflow";
+import { Dataflow, DataflowID, getDataflowDirection } from "./dataflow";
 import type { Device } from "./device";
 import {
   IModule,
@@ -45,6 +45,7 @@ class Pipeline {
       dataflow.datadim_out.copy(),
       dataflow.datadim_out.copy(),
       `Transfer(${dataflow.direction.to}->${to})`,
+      dataflow.id.copy().increment(),
       dataflow.rate
     );
   }
@@ -62,6 +63,7 @@ class Pipeline {
       undefined,
       datadim,
       "Input",
+      new DataflowID([0]),
       this.ingestrate
     );
     let dataflows:Dataflow[] = [dataflow];

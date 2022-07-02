@@ -62,6 +62,7 @@ class Beamform implements IModule{
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
+      dataflow.id.copy().increment(),
       dataflow.rate
     );
     flow.datadim_out.aspects = this.beams;
@@ -136,6 +137,7 @@ class Cast implements IModule{
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
+      dataflow.id.copy().increment(),
       dataflow.rate
     );
     flow.datadim_out.datatype = this.datatype;
@@ -216,6 +218,7 @@ class Channelize implements IModule{
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
+      dataflow.id.copy().increment(),
       dataflow.rate
     );
     flow.datadim_out.timesamples /= this.rate;
@@ -291,6 +294,7 @@ class Detect implements IModule{
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
+      dataflow.id.copy().increment(),
       dataflow.rate
     );
     flow.datadim_out.polarizations = this.components;
@@ -370,6 +374,7 @@ class Gather implements IModule{
       dataflow.datadim_out.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
+      dataflow.id.copy().increment(),
       dataflow.rate*inout_ratio
     );
     flow.datadim_out[this.dimension] = this.length;
@@ -455,6 +460,7 @@ class Integrate implements IModule{
       dataflow.datadim_in.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
+      dataflow.id.copy().increment(),
       dataflow.rate*inout_ratio
     );
     flow.datadim_out[this.dimension] = inout_ratio;
@@ -540,6 +546,7 @@ class Loop implements IModule{
       dataflow.datadim_out.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
+      dataflow.id.copy().increment(),
       dataflow.rate*inout_ratio
     );
     flow.datadim_out[this.dimension] = this.rate;

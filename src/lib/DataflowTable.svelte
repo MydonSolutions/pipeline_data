@@ -46,7 +46,7 @@
 
   {#each dataflows as flow, i}
     <div style="grid-column: 1;">
-      #{i}:
+      #{flow.id.toString()}:
     </div>
     <div style="grid-column: 2;">
       {flow.label}
