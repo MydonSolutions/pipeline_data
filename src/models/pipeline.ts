@@ -18,7 +18,6 @@ export {
 
 class Pipeline {
   label: string;
-  device: Device;
   ingestrate: number;
   modules: IModule[];
   error: Error;
@@ -26,12 +25,10 @@ class Pipeline {
   constructor(
     modules: IModule[],
     label: string,
-    device: Device,
     ingestrate: number,
   ) {
     this.modules = modules;
     this.label = label;
-    this.device = device;
     this.ingestrate = ingestrate;
     this.error = undefined;
   }
@@ -58,10 +55,13 @@ class Pipeline {
     datadim:DataDimension,
   ):Dataflow[] {
     this.error = undefined;
+    if(this.modules.length == 0) {
+      return [];
+    }
 
     let dataflow = DataflowInOut(
       "Input",
-      getDataflowDirection(this.device, this.device),
+      getDataflowDirection(this.modules[0].device, this.modules[0].device),
       datadim,
       new DataflowID([0]),
       this.ingestrate
@@ -91,15 +91,7 @@ class Pipeline {
       console.log(error)
       this.error = error;
     }
-    
-    if(this.device != dataflow.devices.out) {
-      dataflow = this.transfer(this.device, dataflow);
-      dataflows = [
-        ...dataflows,
-        dataflow
-      ];
-    }
-     
+         
     return dataflows;
  }
 }
@@ -107,7 +99,6 @@ function Pipeline_fromObject(jso:Object):Pipeline {
   [
     'modules',
     'label',
-    'device',
     'ingestrate',
   ].forEach(prop => {
     if(!jso.hasOwnProperty(prop)) {
@@ -161,5 +152,5 @@ function Pipeline_fromObject(jso:Object):Pipeline {
     }
     modules = [...modules, module_obj];
   });
-  return new Pipeline(modules, jso['label'], jso['device'], jso['ingestrate']);
+  return new Pipeline(modules, jso['label'], jso['ingestrate']);
 }
