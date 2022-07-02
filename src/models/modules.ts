@@ -279,7 +279,7 @@ class Detect implements IModule{
    * toJSON
    */
   public toJSON() {
-    return `Detect(${this.device},${this.components})`
+    return `Detect(${this.device},${this.components.expression})`
     // return {
     //   "module": "Detect",
     //   "device": this.device,
@@ -541,7 +541,7 @@ class Loop implements IModule{
    * toJSON
    */
   public toJSON() {
-    return `Loop(${this.device},${this.dimension},${this.rate.value})`
+    return `Loop(${this.device},${this.dimension},${this.rate.expression})`
     // return {
     //   "module": "Loop",
     //   "device": this.device,
