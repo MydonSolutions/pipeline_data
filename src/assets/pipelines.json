@@ -1,30 +1,16 @@
 [
   {
-    "label": "Demo",
-    "device": "CPU",
+    "label": "SETI-1Hz",
     "ingestrate": 1,
     "modules": [
-      "Gather(CPU,timesamples,262144)",
       "Loop(CPU,channels,1)",
+      "Loop(CPU,timesamples,2**20)",
       "Cast(GPU,CF32)",
-      "Channelize(GPU,262144)",
-      "Loop(GPU,channels,32)",
-      "Beamform(GPU,8)",
-      "Cast(GPU,CF16)"
-    ]
-  },
-  {
-    "label": "Demo2",
-    "device": "CPU",
-    "ingestrate": 1,
-    "modules": [
-      "Gather(CPU,timesamples,262144)",
-      "Cast(GPU,CF32)",
-      "Channelize(GPU,262144)",
-      "Beamform(GPU,8)",
-      "Cast(GPU,CF16)",
-      "Gather(CPU,timesamples,8)",
-      "Integrate(CPU,timesamples,4)"
+      "Channelize(GPU,2**20)",
+      "Pool",
+      "Loop(CPU,channels,16384)",
+      "Detect(GPU,1)",
+      "Beamform(GPU,64)"
     ]
   }
 ]

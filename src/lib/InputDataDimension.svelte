@@ -6,8 +6,8 @@
 
   export let datadim:DataDimension = new DataDimension(
     new Numeric(27),
-    new Numeric(32),
-    new Numeric(16384),
+    new Numeric(64),
+    new Numeric("2**28"),
     new Numeric(2),
     CI8
   );
