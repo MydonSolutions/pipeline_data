@@ -2,6 +2,7 @@ import { CI8, DataType, DataType_fromObject } from "./datatypes";
 import { Device, getDevice } from "./device";
 import { Dataflow, DataflowInOut, getDataflowDirection } from "./dataflow";
 import { regex_DataDimension } from "./datadimensions";
+import type { Numeric } from "./numeric";
 
 export type {
   IModule,
@@ -25,11 +26,11 @@ interface IModule {
 
 class Beamform implements IModule{
   device: Device;
-  beams: number;
+  beams: Numeric;
 
   constructor(
     device: Device,
-    beams: number
+    beams: Numeric
   ) {
     this.device = device;
     this.beams = beams;
@@ -39,14 +40,14 @@ class Beamform implements IModule{
    * toString
    */
   public toString() {
-    return  `Beamform(${this.beams})`;
+    return  `Beamform(${this.beams.value})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Beamform(${this.device},${this.beams})`
+    return `Beamform(${this.device},${this.beams.expression})`
     // return {
     //   "module": "Beamform",
     //   "device": this.device,
@@ -66,20 +67,20 @@ class Beamform implements IModule{
       dataflow.rates.out
     );
     flow.ids.out.increment();
-    flow.datadims.out.aspects = this.beams;
+    flow.datadims.out.aspects = this.beams.value;
     return flow;
   }
 }
 function Beamform_fromObject(jso:Object) {
   // Handle string
   if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/Beamform\((CPU|GPU),(\d+)\)/);
+    let parsed:string[] = jso.match(/Beamform\((CPU|GPU),(.+)\)/);
     if(parsed == null) {
       throw new Error(`Beamform parse from 'string' object failed: "${jso}".`);
     }
     return new Beamform(
       getDevice(parsed[1]),
-      parseInt(parsed[2])
+      new Numeric(parsed[2])
     );
   }
 
@@ -175,11 +176,11 @@ function Cast_fromObject(jso:Object) {
 
 class Channelize implements IModule{
   device: Device;
-  rate: number;
+  rate: Numeric;
 
   constructor(
     device: Device,
-    rate: number
+    rate: Numeric
   ) {
     this.device = device;
     this.rate = rate;
@@ -189,14 +190,14 @@ class Channelize implements IModule{
    * toString
    */
   public toString() {
-    return  `Channelize(${this.rate})`;
+    return  `Channelize(${this.rate.value})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Channelize(${this.device},${this.rate})`
+    return `Channelize(${this.device},${this.rate.expression})`
     // return {
     //   "module": "Channelize",
     //   "device": this.device,
@@ -208,9 +209,9 @@ class Channelize implements IModule{
   * ingest: upchannelize by a given rate
   */
   public ingest(dataflow:Dataflow):Dataflow {
-    if(dataflow.datadims.in.timesamples % this.rate != 0) {
+    if(dataflow.datadims.in.timesamples % this.rate.value != 0) {
       throw new Error(
-        `Channelizer rate (${this.rate}) not a factor of timesamples (${dataflow.datadims.in.timesamples}).`
+        `Channelizer rate (${this.rate.value}) not a factor of timesamples (${dataflow.datadims.in.timesamples}).`
       );
     }
     
@@ -222,21 +223,21 @@ class Channelize implements IModule{
       dataflow.rates.out
     );
     flow.ids.out.increment();
-    flow.datadims.out.timesamples /= this.rate;
-    flow.datadims.out.channels *= this.rate;
+    flow.datadims.out.timesamples /= this.rate.value;
+    flow.datadims.out.channels *= this.rate.value;
     return flow;
   }
 }
 function Channelize_fromObject(jso:Object) {
   // Handle string
   if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/Channelize\((CPU|GPU),(\d+)\)/);
+    let parsed:string[] = jso.match(/Channelize\((CPU|GPU),(.+)\)/);
     if(parsed == null) {
       throw new Error(`Channelize parse from 'string' object failed: "${jso}".`);
     }
     return new Channelize(
       getDevice(parsed[1]),
-      parseInt(parsed[2])
+      new Numeric(parsed[2])
     );
   }
 
@@ -257,11 +258,11 @@ function Channelize_fromObject(jso:Object) {
 
 class Detect implements IModule{
   device: Device;
-  components: number;
+  components: Numeric;
   
   constructor(
     device: Device,
-    components: number,
+    components: Numeric,
   ) {
     this.device = device;
     this.components = components;
@@ -271,14 +272,14 @@ class Detect implements IModule{
    * toString
    */
   public toString() {
-    return  `Detect(${this.components})`;
+    return  `Detect(${this.components.value})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Detect(${this.device},${this.components})`
+    return `Detect(${this.device},${this.components.expression})`
     // return {
     //   "module": "Detect",
     //   "device": this.device,
@@ -298,20 +299,20 @@ class Detect implements IModule{
       dataflow.rates.out
     );
     flow.ids.out.increment();
-    flow.datadims.out.polarizations = this.components;
+    flow.datadims.out.polarizations = this.components.value;
     return flow;
   }
 }
 function Detect_fromObject(jso:Object) {
   // Handle string
   if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/Detect\((CPU|GPU),(\d+)\)/);
+    let parsed:string[] = jso.match(/Detect\((CPU|GPU),(.+)\)/);
     if(parsed == null) {
       throw new Error(`Detect parse from 'string' object failed: "${jso}".`);
     }
     return new Detect(
       getDevice(parsed[1]),
-      parseInt(parsed[2])
+      new Numeric(parsed[2])
     );
   }
 
@@ -333,12 +334,12 @@ function Detect_fromObject(jso:Object) {
 class Gather implements IModule{
   device: Device;
   dimension: string;
-  length: number;
+  length: Numeric;
 
   constructor(
     device: Device,
     dimension: string,
-    length: number
+    length: Numeric
   ) {
     this.device = device;
     this.dimension = dimension;
@@ -349,14 +350,14 @@ class Gather implements IModule{
    * toString
    */
   public toString() {
-    return  `Gather(${this.dimension},${this.length})`;
+    return  `Gather(${this.dimension},${this.length.value})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Gather(${this.device},${this.dimension},${this.length})`
+    return `Gather(${this.device},${this.dimension},${this.length.expression})`
     // return {
     //   "module": "Gather",
     //   "device": this.device,
@@ -369,7 +370,7 @@ class Gather implements IModule{
   * ingest: gather the `length` of `dimension`
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = dataflow.datadims.out[this.dimension]/this.length;
+    let inout_ratio = dataflow.datadims.out[this.dimension]/this.length.value;
     let flow = DataflowInOut(
       this.toString(),
       getDataflowDirection(dataflow.devices.out, this.device),
@@ -386,7 +387,7 @@ class Gather implements IModule{
 function Gather_fromObject(jso:Object) {
   // Handle string
   if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/Gather\((CPU|GPU),(\w+),(\d+)\)/);
+    let parsed:string[] = jso.match(/Gather\((CPU|GPU),(\w+),(.+)\)/);
     if(parsed == null) {
       throw new Error(`Gather parse from 'string' object failed: "${jso}".`);
     }
@@ -396,7 +397,7 @@ function Gather_fromObject(jso:Object) {
     return new Gather(
       getDevice(parsed[1]),
       parsed[2],
-      parseInt(parsed[3])
+      new Numeric(parsed[3])
     );
   }
 
@@ -420,12 +421,12 @@ function Gather_fromObject(jso:Object) {
 class Integrate implements IModule{
   device: Device;
   dimension: string;
-  length: number;
+  length: Numeric;
 
   constructor(
     device: Device,
     dimension: string,
-    length: number
+    length: Numeric
   ) {
     this.device = device;
     this.dimension = dimension;
@@ -436,14 +437,14 @@ class Integrate implements IModule{
    * toString
    */
   public toString() {
-    return  `Integrate(${this.dimension},${this.length})`;
+    return  `Integrate(${this.dimension},${this.length.value})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Integrate(${this.device},${this.dimension},${this.length})`
+    return `Integrate(${this.device},${this.dimension},${this.length.expression})`
     // return {
     //   "module": "Integrate",
     //   "device": this.device,
@@ -456,7 +457,7 @@ class Integrate implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {
-    let inout_ratio = dataflow.datadims.out[this.dimension]/this.length;
+    let inout_ratio = dataflow.datadims.out[this.dimension]/this.length.value;
     let flow = DataflowInOut(
       this.toString(),
       getDataflowDirection(dataflow.devices.out, this.device),
@@ -473,7 +474,7 @@ class Integrate implements IModule{
 function Integrate_fromObject(jso:Object) {
   // Handle string
   if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/Integrate\((CPU|GPU),(\w+),(\d+)\)/);
+    let parsed:string[] = jso.match(/Integrate\((CPU|GPU),(\w+),(.+)\)/);
     if(parsed == null) {
       throw new Error(`Integrate parse from 'string' object failed: "${jso}".`);
     }
@@ -483,7 +484,7 @@ function Integrate_fromObject(jso:Object) {
     return new Integrate(
       getDevice(parsed[1]),
       parsed[2],
-      parseInt(parsed[3])
+      new Numeric(parsed[3])
     );
   }
 
@@ -507,13 +508,13 @@ function Integrate_fromObject(jso:Object) {
 class Loop implements IModule{
   device: Device;
   dimension: string;
-  rate: number;
+  rate: Numeric;
   _pool: Pool;
 
   constructor(
     device: Device,
     dimension: string,
-    rate: number
+    rate: Numeric
   ) {
     this.device = device;
     this.dimension = dimension;
@@ -533,14 +534,14 @@ class Loop implements IModule{
    * toString
    */
   public toString() {
-    return  `Loop(${this.dimension},${this.rate})`;
+    return  `Loop(${this.dimension},${this.rate.value})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Loop(${this.device},${this.dimension},${this.rate})`
+    return `Loop(${this.device},${this.dimension},${this.rate.expression})`
     // return {
     //   "module": "Loop",
     //   "device": this.device,
@@ -553,11 +554,11 @@ class Loop implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    if(dataflow.datadims.out[this.dimension] % this.rate != 0) {
-      throw new Error(`Loop rate ${this.rate} is not a factor of input '${this.dimension}': ${dataflow.datadims.out[this.dimension]}.`);
+    if(dataflow.datadims.out[this.dimension] % this.rate.value != 0) {
+      throw new Error(`Loop rate ${this.rate.value} is not a factor of input '${this.dimension}': ${dataflow.datadims.out[this.dimension]}.`);
     }
 
-    let inout_ratio = dataflow.datadims.out[this.dimension]/this.rate;
+    let inout_ratio = dataflow.datadims.out[this.dimension]/this.rate.value;
     let flow = DataflowInOut(
       this.toString(),
       getDataflowDirection(dataflow.devices.out, this.device),
@@ -567,10 +568,10 @@ class Loop implements IModule{
     );
     flow.ids.out.push();
     flow.rates.out *= inout_ratio;
-    flow.datadims.out[this.dimension] = this.rate;
+    flow.datadims.out[this.dimension] = this.rate.value;
 
     if(this._pool != null) {
-      this._pool.inverse_rate = inout_ratio;
+      this._pool.inverse_rate = new Numeric(inout_ratio);
     }
 
     return flow;
@@ -579,7 +580,7 @@ class Loop implements IModule{
 function Loop_fromObject(jso:Object) {
   // Handle string
   if(typeof jso == 'string') {
-    let parsed:string[] = jso.match(/Loop\((CPU|GPU),(\w+),(\d+)\)/);
+    let parsed:string[] = jso.match(/Loop\((CPU|GPU),(\w+),(.+)\)/);
     if(parsed == null) {
       throw new Error(`Loop parse from 'string' object failed: "${jso}".`);
     }
@@ -589,7 +590,7 @@ function Loop_fromObject(jso:Object) {
     return new Loop(
       getDevice(parsed[1]),
       parsed[2],
-      parseInt(parsed[3])
+      new Numeric(parsed[3])
     );
   }
 
@@ -612,12 +613,12 @@ function Loop_fromObject(jso:Object) {
 class Pool implements IModule{
   device: Device;
   dimension: string;
-  inverse_rate: number;
+  inverse_rate: Numeric;
 
   constructor(
     device: Device,
     dimension: string,
-    inverse_rate: number
+    inverse_rate: Numeric
   ) {
     this.device = device;
     this.dimension = dimension;
@@ -628,7 +629,7 @@ class Pool implements IModule{
    * toString
    */
   public toString() {
-    return  `Pool(${this.dimension},${this.inverse_rate})`;
+    return  `Pool(${this.dimension},${this.inverse_rate.value})`;
   }
 
   /**
@@ -650,21 +651,21 @@ class Pool implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out.pop(),
-      dataflow.rates.out/this.inverse_rate
+      dataflow.rates.out/this.inverse_rate.value
     );
     flow.ids.out.increment();
-    flow.datadims.out[this.dimension] *= this.inverse_rate;
+    flow.datadims.out[this.dimension] *= this.inverse_rate.value;
     return flow;
   }
 }
 
 const module_examples:IModule[] = [
-  new Beamform(Device.GPU, 4),
+  new Beamform(Device.GPU, new Numeric(4)),
   new Cast(Device.CPU, CI8),
-  new Channelize(Device.CPU, 4),
-  new Detect(Device.CPU, 4),
-  new Gather(Device.CPU, "dimension", 4),
-  new Integrate(Device.CPU, "dimension", 4),
-  new Loop(Device.CPU, "dimension", 4),
-  new Pool(Device.CPU, "dimension", 4),
+  new Channelize(Device.CPU, new Numeric(4)),
+  new Detect(Device.CPU, new Numeric(4)),
+  new Gather(Device.CPU, "dimension", new Numeric(4)),
+  new Integrate(Device.CPU, "dimension", new Numeric(4)),
+  new Loop(Device.CPU, "dimension", new Numeric(4)),
+  new Pool(Device.CPU, "dimension", new Numeric(4)),
 ];
