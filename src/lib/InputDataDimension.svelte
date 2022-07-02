@@ -2,12 +2,13 @@
   import { CI8 } from "../models/datatypes";
   import { DataDimension, DataDimension_fromObject } from "../models/datadimensions";
   import InputJson from "./InputJSON.svelte";
+  import { Numeric } from "../models/numeric";
 
   export let datadim:DataDimension = new DataDimension(
-    27,
-    32,
-    16384,
-    2,
+    new Numeric(27),
+    new Numeric(32),
+    new Numeric(16384),
+    new Numeric(2),
     CI8
   );
 

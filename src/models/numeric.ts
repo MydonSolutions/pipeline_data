@@ -20,4 +20,25 @@ class Numeric {
       throw new Error(`Error: "${expression}" is not Numeric: ${Numeric.regex}.`);
     }
   }
+
+  /**
+   * toString
+   */
+  public toString() {
+    return this.value.toString();
+  }
+
+  /**
+   * toJSON
+   */
+  public toJSON() {
+    return this.expression;
+  }
+
+  /**
+   * copy
+   */
+  public copy() {
+    return new Numeric(this.expression);
+  }
 }

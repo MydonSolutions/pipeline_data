@@ -1,20 +1,21 @@
+import { Numeric } from "./numeric";
 import { DataType, DataType_fromObject } from "./datatypes";
 export { DataDimension, DataDimension_fromObject, regex_DataDimension}
 
 const regex_DataDimension = /aspects|channels|timesamples|polarizations|datatype/;
 
 class DataDimension {
-  aspects: number;
-  channels: number;
-  timesamples: number;
-  polarizations: number;
+  aspects: Numeric;
+  channels: Numeric;
+  timesamples: Numeric;
+  polarizations: Numeric;
   datatype: DataType;
 
   constructor(
-    aspects: number,
-    channels: number,
-    timesamples: number,
-    polarizations: number,
+    aspects: Numeric,
+    channels: Numeric,
+    timesamples: Numeric,
+    polarizations: Numeric,
     datatype: DataType
   ) {
     this.aspects = aspects;
@@ -29,10 +30,10 @@ class DataDimension {
    */
   public copy() {
     return new DataDimension(
-      this.aspects,
-      this.channels,
-      this.timesamples,
-      this.polarizations,
+      this.aspects.copy(),
+      this.channels.copy(),
+      this.timesamples.copy(),
+      this.polarizations.copy(),
       this.datatype.copy(),
     );
   }
@@ -41,10 +42,10 @@ class DataDimension {
     * bytesize: compute the number of bytes of this data
     */
   public bytesize():number {
-    return this.aspects *
-      this.channels *
-      this.timesamples *
-      this.polarizations *
+    return this.aspects.value *
+      this.channels.value *
+      this.timesamples.value *
+      this.polarizations.value *
       this.datatype.bytesize;
   }
 }
@@ -62,10 +63,10 @@ function DataDimension_fromObject(jso:Object):DataDimension {
   });
 
   return new DataDimension(
-    jso['aspects'],
-    jso['channels'],
-    jso['timesamples'],
-    jso['polarizations'],
+    new Numeric(jso['aspects']),
+    new Numeric(jso['channels']),
+    new Numeric(jso['timesamples']),
+    new Numeric(jso['polarizations']),
     DataType_fromObject(jso['datatype'])
   );
 }

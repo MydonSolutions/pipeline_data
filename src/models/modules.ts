@@ -2,7 +2,7 @@ import { CI8, DataType, DataType_fromObject } from "./datatypes";
 import { Device, getDevice } from "./device";
 import { Dataflow, DataflowInOut, getDataflowDirection } from "./dataflow";
 import { regex_DataDimension } from "./datadimensions";
-import type { Numeric } from "./numeric";
+import { Numeric } from "./numeric";
 
 export type {
   IModule,
@@ -47,7 +47,7 @@ class Beamform implements IModule{
    * toJSON
    */
   public toJSON() {
-    return `Beamform(${this.device},${this.beams.expression})`
+    return `Beamform(${this.device},${this.beams})`
     // return {
     //   "module": "Beamform",
     //   "device": this.device,
@@ -67,7 +67,7 @@ class Beamform implements IModule{
       dataflow.rates.out
     );
     flow.ids.out.increment();
-    flow.datadims.out.aspects = this.beams.value;
+    flow.datadims.out.aspects = this.beams;
     return flow;
   }
 }
@@ -197,7 +197,7 @@ class Channelize implements IModule{
    * toJSON
    */
   public toJSON() {
-    return `Channelize(${this.device},${this.rate.expression})`
+    return `Channelize(${this.device},${this.rate})`
     // return {
     //   "module": "Channelize",
     //   "device": this.device,
@@ -209,9 +209,9 @@ class Channelize implements IModule{
   * ingest: upchannelize by a given rate
   */
   public ingest(dataflow:Dataflow):Dataflow {
-    if(dataflow.datadims.in.timesamples % this.rate.value != 0) {
+    if(dataflow.datadims.in.timesamples.value % this.rate.value != 0) {
       throw new Error(
-        `Channelizer rate (${this.rate.value}) not a factor of timesamples (${dataflow.datadims.in.timesamples}).`
+        `Channelizer rate (${this.rate}) not a factor of timesamples (${dataflow.datadims.in.timesamples}).`
       );
     }
     
@@ -223,8 +223,8 @@ class Channelize implements IModule{
       dataflow.rates.out
     );
     flow.ids.out.increment();
-    flow.datadims.out.timesamples /= this.rate.value;
-    flow.datadims.out.channels *= this.rate.value;
+    flow.datadims.out.timesamples = new Numeric(`(${flow.datadims.out.timesamples})/(${this.rate})`);
+    flow.datadims.out.channels = new Numeric(`(${flow.datadims.out.channels})*(${this.rate})`);
     return flow;
   }
 }
@@ -279,7 +279,7 @@ class Detect implements IModule{
    * toJSON
    */
   public toJSON() {
-    return `Detect(${this.device},${this.components.expression})`
+    return `Detect(${this.device},${this.components})`
     // return {
     //   "module": "Detect",
     //   "device": this.device,
@@ -299,7 +299,7 @@ class Detect implements IModule{
       dataflow.rates.out
     );
     flow.ids.out.increment();
-    flow.datadims.out.polarizations = this.components.value;
+    flow.datadims.out.polarizations = this.components;
     return flow;
   }
 }
@@ -357,7 +357,7 @@ class Gather implements IModule{
    * toJSON
    */
   public toJSON() {
-    return `Gather(${this.device},${this.dimension},${this.length.expression})`
+    return `Gather(${this.device},${this.dimension},${this.length})`
     // return {
     //   "module": "Gather",
     //   "device": this.device,
@@ -370,7 +370,7 @@ class Gather implements IModule{
   * ingest: gather the `length` of `dimension`
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    let inout_ratio = dataflow.datadims.out[this.dimension]/this.length.value;
+    let inout_ratio = dataflow.datadims.out[this.dimension].value/this.length.value;
     let flow = DataflowInOut(
       this.toString(),
       getDataflowDirection(dataflow.devices.out, this.device),
@@ -380,7 +380,7 @@ class Gather implements IModule{
     );
     flow.ids.out.increment();
     flow.rates.out *= inout_ratio;
-    flow.datadims.out[this.dimension] = this.length;
+    flow.datadims.out[this.dimension].value = this.length;
     return flow;
   }
 }
@@ -444,7 +444,7 @@ class Integrate implements IModule{
    * toJSON
    */
   public toJSON() {
-    return `Integrate(${this.device},${this.dimension},${this.length.expression})`
+    return `Integrate(${this.device},${this.dimension},${this.length})`
     // return {
     //   "module": "Integrate",
     //   "device": this.device,
@@ -457,7 +457,7 @@ class Integrate implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {
-    let inout_ratio = dataflow.datadims.out[this.dimension]/this.length.value;
+    let inout_ratio = dataflow.datadims.out[this.dimension].value/this.length.value;
     let flow = DataflowInOut(
       this.toString(),
       getDataflowDirection(dataflow.devices.out, this.device),
@@ -467,7 +467,7 @@ class Integrate implements IModule{
     );
     flow.ids.out.increment();
     flow.rates.out *= inout_ratio;
-    flow.datadims.out[this.dimension] = inout_ratio;
+    flow.datadims.out[this.dimension].value = inout_ratio;
     return flow;
   }
 }
@@ -541,7 +541,7 @@ class Loop implements IModule{
    * toJSON
    */
   public toJSON() {
-    return `Loop(${this.device},${this.dimension},${this.rate.expression})`
+    return `Loop(${this.device},${this.dimension},${this.rate})`
     // return {
     //   "module": "Loop",
     //   "device": this.device,
@@ -554,11 +554,11 @@ class Loop implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {    
-    if(dataflow.datadims.out[this.dimension] % this.rate.value != 0) {
+    if(dataflow.datadims.out[this.dimension].value % this.rate.value != 0) {
       throw new Error(`Loop rate ${this.rate.value} is not a factor of input '${this.dimension}': ${dataflow.datadims.out[this.dimension]}.`);
     }
 
-    let inout_ratio = dataflow.datadims.out[this.dimension]/this.rate.value;
+    let inout_ratio = dataflow.datadims.out[this.dimension].value/this.rate.value;
     let flow = DataflowInOut(
       this.toString(),
       getDataflowDirection(dataflow.devices.out, this.device),
@@ -568,7 +568,7 @@ class Loop implements IModule{
     );
     flow.ids.out.push();
     flow.rates.out *= inout_ratio;
-    flow.datadims.out[this.dimension] = this.rate.value;
+    flow.datadims.out[this.dimension] = this.rate;
 
     if(this._pool != null) {
       this._pool.inverse_rate = new Numeric(inout_ratio);
@@ -654,7 +654,7 @@ class Pool implements IModule{
       dataflow.rates.out/this.inverse_rate.value
     );
     flow.ids.out.increment();
-    flow.datadims.out[this.dimension] *= this.inverse_rate.value;
+    flow.datadims.out[this.dimension] = new Numeric(`${flow.datadims.out[this.dimension]}*${this.inverse_rate}`);
     return flow;
   }
 }
