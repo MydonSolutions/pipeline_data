@@ -40,14 +40,14 @@ class Beamform implements IModule{
    * toString
    */
   public toString() {
-    return  `Beamform(${this.beams.value})`;
+    return  `Beamform(${this.beams})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Beamform(${this.device},${this.beams})`
+    return `Beamform(${this.device},${this.beams.expression})`
     // return {
     //   "module": "Beamform",
     //   "device": this.device,
@@ -190,14 +190,14 @@ class Channelize implements IModule{
    * toString
    */
   public toString() {
-    return  `Channelize(${this.rate.value})`;
+    return  `Channelize(${this.rate})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Channelize(${this.device},${this.rate})`
+    return `Channelize(${this.device},${this.rate.expression})`
     // return {
     //   "module": "Channelize",
     //   "device": this.device,
@@ -272,7 +272,7 @@ class Detect implements IModule{
    * toString
    */
   public toString() {
-    return  `Detect(${this.components.value})`;
+    return  `Detect(${this.components})`;
   }
 
   /**
@@ -350,14 +350,14 @@ class Gather implements IModule{
    * toString
    */
   public toString() {
-    return  `Gather(${this.dimension},${this.length.value})`;
+    return  `Gather(${this.dimension},${this.length})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Gather(${this.device},${this.dimension},${this.length})`
+    return `Gather(${this.device},${this.dimension},${this.length.expression})`
     // return {
     //   "module": "Gather",
     //   "device": this.device,
@@ -437,14 +437,14 @@ class Integrate implements IModule{
    * toString
    */
   public toString() {
-    return  `Integrate(${this.dimension},${this.length.value})`;
+    return  `Integrate(${this.dimension},${this.length})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Integrate(${this.device},${this.dimension},${this.length})`
+    return `Integrate(${this.device},${this.dimension},${this.length.expression})`
     // return {
     //   "module": "Integrate",
     //   "device": this.device,
@@ -534,14 +534,14 @@ class Loop implements IModule{
    * toString
    */
   public toString() {
-    return  `Loop(${this.dimension},${this.rate.value})`;
+    return  `Loop(${this.dimension},${this.rate})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Loop(${this.device},${this.dimension},${this.rate})`
+    return `Loop(${this.device},${this.dimension},${this.rate.value})`
     // return {
     //   "module": "Loop",
     //   "device": this.device,
@@ -629,7 +629,7 @@ class Pool implements IModule{
    * toString
    */
   public toString() {
-    return  `Pool(${this.dimension},${this.inverse_rate.value})`;
+    return  `Pool(${this.dimension},${this.inverse_rate})`;
   }
 
   /**
