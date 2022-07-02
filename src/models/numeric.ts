@@ -16,7 +16,7 @@ class Numeric {
         this.expression = expression;
       }
     }
-    if(!this.value) {
+    if(!this.value && this.value != 0) {
       throw new Error(`Error: "${expression}" is not Numeric: ${Numeric.regex}.`);
     }
   }
