@@ -651,9 +651,10 @@ class Pool implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out.pop(),
-      dataflow.rates.out/this.inverse_rate.value
+      dataflow.rates.out
     );
     flow.ids.out.increment();
+    flow.rates.out /= this.inverse_rate.value;
     flow.datadims.out[this.dimension] = new Numeric(`${flow.datadims.out[this.dimension]}*${this.inverse_rate}`);
     return flow;
   }

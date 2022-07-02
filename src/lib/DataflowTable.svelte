@@ -44,7 +44,7 @@
     <div style="grid-column: 3;" class={flow.devices.out}>
       <Tooltip tip={flow.devices.out}>
         {byte_string(flow.datadims.out.bytesize())}
-        {#if flow.rates.in != flow.rates.out}
+        {#if i > 0 && flow.datadims.out.bytesize() != flow.datadims.in.bytesize()}
           ({ratio_string(flow.datadims.out.bytesize()/dataflows[i-1].datadims.out.bytesize())})
         {/if}
       </Tooltip>
@@ -58,8 +58,8 @@
     </div>
     <div style="grid-column: 5;">
       {ratio_string(flow.rates.out)}
-      {#if i > 0 && flow.rates.out != dataflows[i-1].rates.out}
-        ({ratio_string(flow.rates.out/dataflows[i-1].rates.out)})
+      {#if i > 0 && flow.rates.out != flow.rates.in}
+        ({ratio_string(flow.rates.out/flow.rates.in)})
       {/if}
     </div>
     <div style="grid-column: 6;">
