@@ -3,6 +3,7 @@
   import type { Pipeline } from "../models/pipeline";
   import type { DataDimension } from "../models/datadimensions";
   import DataflowTable from "./DataflowTable.svelte";
+  import { byte_string} from "./string_helpers";
 
   export let pipeline:Pipeline = undefined;
   export let datadim:DataDimension = undefined;
@@ -23,35 +24,15 @@
       }
     }
     dataflows.forEach(flow => {
-      if(flow.datadim_out != undefined){
-        bytestats['timeinvariant'][flow.direction.to] += flow.datadim_out.bytesize();
-        bytestats['relative_throughput'][flow.direction.to] += flow.datadim_out.bytesize()*flow.rate;
-        if(flow.direction.to != flow.direction.from){
-          bytestats['buses']['PCI'] += flow.datadim_out.bytesize()*flow.rate;
-        }
+      bytestats['timeinvariant'][flow.devices.out] += flow.datadims.out.bytesize();
+      bytestats['relative_throughput'][flow.devices.out] += flow.datadims.out.bytesize()*flow.rates.out;
+      if(flow.devices.in != flow.devices.out){
+        bytestats['buses']['PCI'] += flow.datadims.out.bytesize()*flow.rates.out;
       }
     });
     return bytestats;
   }
   $: dataflow_bytestats = dataflowsBytestats(dataflows);
-
-  function round_decimals(num:number, decimals:number):number {
-    return Math.round(num * 10**decimals)/10**decimals
-  }
-
-  function byte_string(bytes:number):string {
-    if (bytes < 1e3) {
-      return `${bytes} Bytes`;
-    } else if (bytes < 1e6) {
-      return `${(round_decimals(bytes, 6)/1e3).toFixed(3)} KBytes`;
-    } else if (bytes < 1e9) {
-      return `${(round_decimals(bytes, 6)/1e6).toFixed(6)} MBytes`;
-    } else if (bytes < 1e12) {
-      return `${(round_decimals(bytes, 6)/1e9).toFixed(6)} GBytes`;
-    } else if (bytes < 1e16) {
-      return `${(round_decimals(bytes, 6)/1e12).toFixed(6)} TBytes`;
-    }
-  }
 </script>
 
 <div>
