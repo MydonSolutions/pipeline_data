@@ -14,6 +14,7 @@ export {
   Gather, Gather_fromObject,
   Integrate, Integrate_fromObject,
   Loop, Loop_fromObject,
+  Pool,
   module_examples
 }
 
@@ -207,7 +208,7 @@ class Channelize implements IModule{
   * ingest: upchannelize by a given rate
   */
   public ingest(dataflow:Dataflow):Dataflow {
-    if (dataflow.datadim_in.timesamples % this.rate != 0) {
+    if(dataflow.datadim_in.timesamples % this.rate != 0) {
       throw new Error(
         `Channelizer rate (${this.rate}) not a factor of timesamples (${dataflow.datadim_in.timesamples}).`
       );
@@ -505,6 +506,7 @@ class Loop implements IModule{
   device: Device;
   dimension: string;
   rate: number;
+  _pool: Pool;
 
   constructor(
     device: Device,
@@ -514,6 +516,15 @@ class Loop implements IModule{
     this.device = device;
     this.dimension = dimension;
     this.rate = rate;
+    this._pool = null;
+  }
+
+  /**
+   * pool
+   */
+  public pool():Pool {
+    this._pool = new Pool(this.device, this.dimension, undefined);
+    return this._pool
   }
 
   /**
@@ -550,10 +561,15 @@ class Loop implements IModule{
       dataflow.datadim_out.copy(),
       dataflow.datadim_out.copy(),
       this.toString(),
-      dataflow.id.copy().increment(),
+      dataflow.id.copy().increment().push(),
       dataflow.rate*inout_ratio
     );
     flow.datadim_out[this.dimension] = this.rate;
+
+    if(this._pool != null) {
+      this._pool.inverse_rate = inout_ratio;
+    }
+
     return flow;
   }
 }
@@ -590,6 +606,55 @@ function Loop_fromObject(jso:Object) {
     jso['rate']
   );
 }
+class Pool implements IModule{
+  device: Device;
+  dimension: string;
+  inverse_rate: number;
+
+  constructor(
+    device: Device,
+    dimension: string,
+    inverse_rate: number
+  ) {
+    this.device = device;
+    this.dimension = dimension;
+    this.inverse_rate = inverse_rate;
+  }
+
+  /**
+   * toString
+   */
+  public toString() {
+    return  `Pool(${this.dimension},${this.inverse_rate})`;
+  }
+
+  /**
+   * toJSON
+   */
+  public toJSON() {
+    return `Pool`
+    // return {
+    //   "module": "Pool",
+    // }
+  }
+
+  /**
+  * ingest: reduce the number of timesamples
+  */
+  public ingest(dataflow:Dataflow):Dataflow {    
+    let inout_ratio = this.inverse_rate/dataflow.datadim_out[this.dimension];
+    let flow = new Dataflow(
+      getDataflowDirection(dataflow.direction.to, this.device),
+      dataflow.datadim_out.copy(),
+      dataflow.datadim_out.copy(),
+      this.toString(),
+      dataflow.id.copy().pop().increment(),
+      dataflow.rate/inout_ratio
+    );
+    flow.datadim_out[this.dimension] *= this.inverse_rate;
+    return flow;
+  }
+}
 
 const module_examples:IModule[] = [
   new Beamform(Device.GPU, 4),
@@ -599,4 +664,5 @@ const module_examples:IModule[] = [
   new Gather(Device.CPU, "dimension", 4),
   new Integrate(Device.CPU, "dimension", 4),
   new Loop(Device.CPU, "dimension", 4),
+  new Pool(Device.CPU, "dimension", 4),
 ];

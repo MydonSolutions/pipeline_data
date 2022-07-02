@@ -10,6 +10,7 @@ import {
   Detect_fromObject,
   Gather_fromObject,
   Loop_fromObject,
+  Pool,
 } from "./modules";
 
 export {
@@ -115,6 +116,7 @@ function Pipeline_fromObject(jso:Object):Pipeline {
   });
 
   let modules:IModule[] = [];
+  let loop_depth = [];
   jso['modules'].forEach(module => {
     let module_obj = null;
     let identifier = null;
@@ -146,6 +148,10 @@ function Pipeline_fromObject(jso:Object):Pipeline {
         break;
       case 'Loop':
         module_obj = Loop_fromObject(module);
+        loop_depth.push(module_obj);
+        break;
+      case 'Pool':
+        module_obj = loop_depth.pop().pool();
         break;
       default:
         break;
