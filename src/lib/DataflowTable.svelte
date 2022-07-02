@@ -21,6 +21,15 @@
       return `${(round_decimals(bytes, 3)/1e12).toFixed(3)} TB`;
     }
   }
+
+  function ratio_string(ratio:number):string {
+    if(ratio < 1) {
+      return `${1/ratio}:1`;
+    }
+    else {
+      return `1:${ratio}`;
+    }
+  }
 </script>
 
 
@@ -61,8 +70,8 @@
     <div style="grid-column: 3;" class={flow.devices.out}>
       <Tooltip tip={flow.devices.out}>
         {byte_string(flow.datadims.out.bytesize())}
-        {#if i > 0}
-          (x{round_decimals(flow.datadims.out.bytesize()/dataflows[i-1].datadims.out.bytesize(), 6)})
+        {#if flow.rates.in != flow.rates.out}
+          ({ratio_string(flow.datadims.out.bytesize()/dataflows[i-1].datadims.out.bytesize())})
         {/if}
       </Tooltip>
     </div>
@@ -74,9 +83,9 @@
         {flow.datadims.out.datatype.label})
     </div>
     <div style="grid-column: 5;">
-      @ {flow.rates.out}
-      {#if i > 0}
-        (x{flow.rates.out/flow.rates.in})
+      {ratio_string(flow.rates.out)}
+      {#if i > 0 && flow.rates.out != dataflows[i-1].rates.out}
+        ({ratio_string(flow.rates.out/dataflows[i-1].rates.out)})
       {/if}
     </div>
     <div style="grid-column: 6;">
