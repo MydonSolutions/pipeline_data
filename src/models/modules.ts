@@ -63,7 +63,7 @@ class Beamform implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out,
-      dataflow.rate
+      dataflow.rates.out
     );
     flow.ids.out.increment();
     flow.datadims.out.aspects = this.beams;
@@ -138,7 +138,7 @@ class Cast implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out,
-      dataflow.rate
+      dataflow.rates.out
     );
     flow.ids.out.increment();
     flow.datadims.out.datatype = this.datatype;
@@ -219,7 +219,7 @@ class Channelize implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out,
-      dataflow.rate
+      dataflow.rates.out
     );
     flow.ids.out.increment();
     flow.datadims.out.timesamples /= this.rate;
@@ -295,7 +295,7 @@ class Detect implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out,
-      dataflow.rate
+      dataflow.rates.out
     );
     flow.ids.out.increment();
     flow.datadims.out.polarizations = this.components;
@@ -375,9 +375,10 @@ class Gather implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out,
-      dataflow.rate*inout_ratio
+      dataflow.rates.out
     );
     flow.ids.out.increment();
+    flow.rates.out *= inout_ratio;
     flow.datadims.out[this.dimension] = this.length;
     return flow;
   }
@@ -461,9 +462,10 @@ class Integrate implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out,
-      dataflow.rate*inout_ratio
+      dataflow.rates.out
     );
     flow.ids.out.increment();
+    flow.rates.out *= inout_ratio;
     flow.datadims.out[this.dimension] = inout_ratio;
     return flow;
   }
@@ -561,9 +563,10 @@ class Loop implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out,
-      dataflow.rate*inout_ratio
+      dataflow.rates.out
     );
     flow.ids.out.push();
+    flow.rates.out *= inout_ratio;
     flow.datadims.out[this.dimension] = this.rate;
 
     if(this._pool != null) {
@@ -648,7 +651,7 @@ class Pool implements IModule{
       getDataflowDirection(dataflow.devices.out, this.device),
       dataflow.datadims.out,
       dataflow.ids.out.pop(),
-      dataflow.rate/inout_ratio
+      dataflow.rates.out/inout_ratio
     );
     flow.ids.out.increment();
     flow.datadims.out[this.dimension] *= this.inverse_rate;

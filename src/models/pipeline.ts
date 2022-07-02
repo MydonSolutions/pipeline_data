@@ -45,7 +45,7 @@ class Pipeline {
       getDataflowDirection(dataflow.devices.out, to),
       dataflow.datadims.out,
       dataflow.ids.out,
-      dataflow.rate
+      dataflow.rates.out
     );
     flow.ids.out.increment();
     return flow;
@@ -59,19 +59,14 @@ class Pipeline {
   ):Dataflow[] {
     this.error = undefined;
 
-    let dataflow = new Dataflow(
+    let dataflow = DataflowInOut(
       "Input",
       getDataflowDirection(this.device, this.device),
-      new IOPair<DataDimension>(
-        datadim,
-        datadim
-      ),
-      new IOPair<DataflowID>(
-        new DataflowID([0]),
-        new DataflowID([1]),
-      ),
+      datadim,
+      new DataflowID([0]),
       this.ingestrate
     );
+    dataflow.ids.out.increment();
     let dataflows:Dataflow[] = [dataflow];
     
     try {

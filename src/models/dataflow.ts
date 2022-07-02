@@ -121,20 +121,20 @@ class Dataflow {
   devices: IOPair<Device>
   datadims: IOPair<DataDimension>
   ids: IOPair<DataflowID>
-  rate: number
+  rates: IOPair<number>
 
   constructor(
     label: string,
     devices: IOPair<Device>,
     datadims: IOPair<DataDimension>,
     ids: IOPair<DataflowID>,
-    rate: number,
+    rates: IOPair<number>,
   ) {
     this.label = label;
     this.devices = devices;
     this.datadims = datadims;
     this.ids = ids;
-    this.rate = rate;
+    this.rates = rates;
   }
 
   /**
@@ -146,7 +146,7 @@ class Dataflow {
       this.devices.copy(),
       this.datadims.copy(),
       this.ids.copy(),
-      this.rate,
+      this.rates,
     );
   }
 }
@@ -170,6 +170,9 @@ function DataflowInOut(
       id,
       id.copy(),
     ),
-    rate
+    new IOPair<number>(
+      rate,
+      rate,
+    ),
   );
 }

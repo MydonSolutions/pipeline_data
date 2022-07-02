@@ -74,13 +74,13 @@
         {flow.datadims.out.datatype.label})
     </div>
     <div style="grid-column: 5;">
-      @ {flow.rate}
+      @ {flow.rates.out}
       {#if i > 0}
-        (x{flow.rate/dataflows[i-1].rate})
+        (x{flow.rates.out/flow.rates.in})
       {/if}
     </div>
     <div style="grid-column: 6;">
-      {byte_string(flow.rate*flow.datadims.in.bytesize())}
+      {byte_string(flow.rates.out*flow.datadims.out.bytesize())}
     </div>
   {/each}
 </div>
