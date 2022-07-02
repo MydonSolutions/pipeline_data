@@ -540,6 +540,10 @@ class Loop implements IModule{
   * ingest: reduce the number of timesamples
   */
   public ingest(dataflow:Dataflow):Dataflow {    
+    if(dataflow.datadim_out[this.dimension] % this.rate != 0) {
+      throw new Error(`Loop rate ${this.rate} is not a factor of input '${this.dimension}': ${dataflow.datadim_out[this.dimension]}.`);
+    }
+
     let inout_ratio = dataflow.datadim_out[this.dimension]/this.rate;
     let flow = new Dataflow(
       getDataflowDirection(dataflow.direction.to, this.device),
