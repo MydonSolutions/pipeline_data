@@ -1,4 +1,4 @@
-import { CI8, DataType, DataType_fromObject } from "./datatypes";
+import { I8, CI8, I16, CI16, I32, CI32, I64, CI64, F16, CF16, F32, CF32, F64, CF64, DataType, DataType_fromObject } from "./datatypes";
 import { Device, getDevice } from "./device";
 import { Dataflow, DataflowInOut, getDataflowDirection } from "./dataflow";
 import { regex_DataDimension } from "./datadimensions";
@@ -300,6 +300,14 @@ class Detect implements IModule{
     );
     flow.ids.out.increment();
     flow.datadims.out.polarizations = this.components;
+
+    if(flow.datadims.out.datatype.label[0] == 'C') {
+      flow.datadims.out.datatype.bytesize /= 2;
+      flow.datadims.out.datatype.label = flow.datadims.out.datatype.label.slice(1);
+    }
+    else {
+      throw new Error(`Detect module must operate on complex data, not: "${flow.datadims.out.datatype.toJSON()}".`);
+    }
     return flow;
   }
 }
