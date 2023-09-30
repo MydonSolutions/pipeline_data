@@ -11,11 +11,12 @@ export {
   Beamform, Beamform_fromObject,
   Cast, Cast_fromObject,
   Channelize, Channelize_fromObject,
+  Correlate, Correlate_fromObject,
   Detect, Detect_fromObject,
   Gather, Gather_fromObject,
   Integrate, Integrate_fromObject,
   Loop, Loop_fromObject,
-  Pool,
+  Pool, Pool_fromObject,
   module_examples
 }
 
@@ -253,6 +254,75 @@ function Channelize_fromObject(jso:Object) {
   return new Channelize(
     jso['device'],
     jso['rate']
+  );
+}
+
+class Correlate implements IModule{
+  device: Device;
+
+  constructor(
+    device: Device,
+  ) {
+    this.device = device;
+  }
+
+  /**
+   * toString
+   */
+  public toString() {
+    return `Correlate(${this.device})`
+  }
+
+  /**
+   * toJSON
+   */
+  public toJSON() {
+    return `Correlate(${this.device})`
+    // return {
+    //   "module": "Correlate",
+    //   "device": this.device,
+    // }
+  }
+
+  /**
+  * ingest: Correlate
+  */
+  public ingest(dataflow:Dataflow):Dataflow {
+    let flow = DataflowInOut(
+      this.toString(),
+      getDataflowDirection(dataflow.devices.out, this.device),
+      dataflow.datadims.out,
+      dataflow.ids.out,
+      dataflow.rates.out
+    );
+    flow.ids.out.increment();
+    flow.datadims.out.aspects = new Numeric(`(${flow.datadims.out.aspects}*(${flow.datadims.out.aspects}+1))/(2)`);
+    flow.datadims.out.polarizations = new Numeric(`(${flow.datadims.out.polarizations})*(${flow.datadims.out.polarizations})`);
+    return flow;
+  }
+}
+function Correlate_fromObject(jso:Object) {
+  // Handle string
+  if(typeof jso == 'string') {
+    let parsed:string[] = jso.match(/Correlate\((CPU|GPU)\)/);
+    if(parsed == null) {
+      throw new Error(`Correlate parse from 'string' object failed: "${jso}".`);
+    }
+    return new Correlate(
+      getDevice(parsed[1])
+    );
+  }
+
+  // Handle JSObject
+  [
+    'device'
+  ].forEach(prop => {
+    if(!jso.hasOwnProperty(prop)) {
+      throw new Error(`Correlate from JSObject: Missing '${prop}' property (${JSON.stringify(jso, null, 2)}).`);
+    }
+  });
+  return new Correlate(
+    jso['device']
   );
 }
 
@@ -534,7 +604,9 @@ class Loop implements IModule{
    * pool
    */
   public pool():Pool {
-    this._pool = new Pool(this.device, this.dimension, undefined);
+    if(this._pool == null) {
+      this._pool = new Pool(this.device, this.dimension);
+    }
     return this._pool
   }
 
@@ -578,9 +650,7 @@ class Loop implements IModule{
     flow.rates.out *= inout_ratio;
     flow.datadims.out[this.dimension] = this.rate;
 
-    if(this._pool != null) {
-      this._pool.inverse_rate = new Numeric(inout_ratio);
-    }
+    this.pool().inverse_rate = new Numeric(inout_ratio);
 
     return flow;
   }
@@ -625,26 +695,26 @@ class Pool implements IModule{
 
   constructor(
     device: Device,
-    dimension: string,
-    inverse_rate: Numeric
+    dimension: string
   ) {
     this.device = device;
     this.dimension = dimension;
-    this.inverse_rate = inverse_rate;
+    // `inverse_rate` gets set by Loop when it ingests
+    this.inverse_rate = undefined;
   }
 
   /**
    * toString
    */
   public toString() {
-    return  `Pool(${this.dimension},${this.inverse_rate})`;
+    return  `Pool(${this.device},${this.dimension})`;
   }
 
   /**
    * toJSON
    */
   public toJSON() {
-    return `Pool`
+    return  `Pool(${this.device},${this.dimension})`
     // return {
     //   "module": "Pool",
     // }
@@ -672,9 +742,10 @@ const module_examples:IModule[] = [
   new Beamform(Device.GPU, new Numeric(4)),
   new Cast(Device.CPU, CI8),
   new Channelize(Device.CPU, new Numeric(4)),
+  new Correlate(Device.GPU),
   new Detect(Device.CPU, new Numeric(4)),
   new Gather(Device.CPU, "dimension", new Numeric(4)),
   new Integrate(Device.CPU, "dimension", new Numeric(4)),
   new Loop(Device.CPU, "dimension", new Numeric(4)),
-  new Pool(Device.CPU, "dimension", new Numeric(4)),
+  new Pool(Device.CPU, "dimension"),
 ];

@@ -7,6 +7,7 @@ import {
   Beamform_fromObject,
   Cast_fromObject,
   Channelize_fromObject,
+  Correlate_fromObject,
   Detect_fromObject,
   Gather_fromObject,
   Loop_fromObject,
@@ -130,6 +131,9 @@ function Pipeline_fromObject(jso:Object):Pipeline {
         break;
       case 'Channelize':
         module_obj = Channelize_fromObject(module);
+        break;
+      case 'Correlate':
+        module_obj = Correlate_fromObject(module);
         break;
       case 'Detect':
         module_obj = Detect_fromObject(module);
